@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>jQuery Timer Plugin</title>
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	
+	<meta name="author" content="James Brooks, @jbrooksuk">
+
+	<script src="http://code.jquery.com/jquery.js"></script>
+	<script src="jquery.timer.js"></script>
+	<script>
+		$(function() {
+			var timeout = 1000;
+			var timer;
+			
+			$("input[name=start]").click(function() {
+				$("#console").append("<span style=\"color: #0F0\">Timer started.</span<br />");
+				timer = $.timer(timeout, function() {
+					$("#console").append("Timer completed.<br />");
+				});
+			});
+
+			$("input[name=stop]").click(function() {
+				if(timer.stop()) {
+					$("#console").append("<span style=\"color: #F00\">Timer stopped.</span<br />");
+				}
+			});
+
+			$("input[name=pause]").click(function() {
+				if(timer.pause()) {
+					$("#console").append("<span style=\"color: #FF0\">Timer paused.</span<br />");
+				}
+			});
+
+			$("input[name=resume]").click(function() {
+				if(timer.resume()) {
+					$("#console").append("<span style=\"color: #F00\">Timer resumed.</span<br />");
+				}
+			});
+			
+			$("input[name=reset]").click(function() {
+				timer.stop();
+				timeout = prompt("Reset timeout too:", 500);
+				timer.reset(timeout);
+				$("#console").append("<span style=\"color: #00F\">Timer reset.</span<br />");
+			});
+		});
+	</script>
+</head>
+
+<body>
+	<h3>jQuery Timer Example</h3>
+	<p>This example shows how the plugin can be used to control a timer. By default, the timer will execute 
+	every second.</p>
+	<input type="button" name="start" value="Start Example"/>
+	<input type="button" name="stop" value="Stop Example"/>
+	<input type="button" name="pause" value="Pause Example"/>
+	<input type="button" name="resume" value="Resume Example"/>
+	<input type="button" name="reset" value="Reset Example"/>
+	
+	<div id="console">
+		
+	</div>
+</body>
+<script type="text/javascript"> 
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script> 
+<script type="text/javascript"> 
+try {
+var pageTracker = _gat._getTracker("UA-6698036-8");
+pageTracker._trackPageview();
+} catch(err) {}</script> 
+</html>

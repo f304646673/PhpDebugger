@@ -1,0 +1,59 @@
+pre {
+    position: relative;
+    margin-bottom: 24px;
+    border-radius: 3px;
+    border: 1px solid #C3CCD0;
+    background: #FFF;
+    width:100%;
+    heigth:100%;
+}
+
+code {
+  display: block;
+  padding: 12px 24px;
+  overflow-y: auto;
+  font-weight: 300;
+  font-family: Menlo, monospace;
+  font-size: 0.8em;
+  overflow: scroll;
+  width:100%;
+  heigth:100%;
+}
+
+code.has-numbering {
+    margin-left: 32px;
+}
+
+.pre-numbering {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 29px;
+    margin-top: 0px;
+    padding: 6px 2px 6px 0;
+    border-right: 1px solid #C3CCD0;
+    border-radius: 3px 0 0 3px;
+    background-color: #EEE;
+    text-align: right;
+    font-family: Menlo, monospace;
+    font-size: 0.8em;
+    color: #AAA;
+}
+
+.pre-numbering li.active {
+    background-color: #f00;
+    color: #fff;
+}
+.pre-numbering li.run_active {
+    background-color: #0f0;
+    color: #fff;
+}
+.pre-numbering li.run {
+    background-color: #0f0;
+    color: #aaa;
+}
+
+.pre#json-renderer {
+    border: 1px solid #aaa;
+    padding: 0.5em 1.5em;
+}
