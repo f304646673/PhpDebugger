@@ -11,16 +11,6 @@ $(document).ready(function(){
         floder_reload();
     }, 100);
 
-    $("#start_stop_debug").click(function() {
-        if ($(this)[0].attributes.radio.value == "start") {
-            $(this)[0].attributes.radio.value = "stop";
-            stop_debug();
-        }
-        else {
-            $(this)[0].attributes.radio.value = "start";
-            start_debug();
-        }
-    });
 
     $('#console_dlg_cmd').textbox('textbox').bind('keydown', function(e){
         if (e.keyCode == 13){	// when press ENTER key, accept the inputed value.
@@ -73,6 +63,18 @@ $(document).ready(function(){
         update_debugger_status();
     });
     
+     $('#start_stop_debug').switchbutton({
+        onChange: function(checked){
+            if (checked) {
+                start_debug();
+            }
+            else {
+                stop_debug();
+            }
+            console.log(checked);
+        }
+    });
+        
     update_debugger_status();
 });
 
@@ -252,17 +254,23 @@ function change_debugger_status(status) {
 }
 
 function debugger_status_init() {
-    $("#start_stop_debug").linkbutton({text:'Start'});
+    $("#start_stop_debug").switchbutton({
+        checked:false
+    });
     remove_run_line_no();
 }
 
 function debugger_status_listen() {
-    $("#start_stop_debug").linkbutton({text:'Stop'});
+    $("#start_stop_debug").switchbutton({
+        checked:true
+    });
     remove_run_line_no();
 }
 
 function debugger_status_debug() {
-    $("#start_stop_debug").linkbutton({text:'Stop'});
+    $("#start_stop_debug").switchbutton({
+        checked:true
+    });
     update_cur_source_run_line_no();
 }
 

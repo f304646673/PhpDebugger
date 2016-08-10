@@ -89,32 +89,30 @@ class pydbgpd_stub:
         self._out_read_thread = Thread(target=self._read_stdout_thread)
         self._out_read_thread.daemon = True # thread dies with the program
         self._out_read_thread.start()
-        data = self.listenData()
+        data = self._listenData()
         return data
         
     def stop(self):
-        self._stop_thread = True
-        self._out_read_thread = None
+        if not self._out_read_thread:
+            while self._out_read_thread.is_alive():
+                self._stop_thread = True
+                time.sleep(0.01)
+
+            self._out_read_thread = None
         
-        if (self._process == None):
+        if not self._process:
             raise NameError("subprocess is none")
         else:
             self._process.terminate()
             self._process.kill()
             self._process = None
-        
-    def _query(self, query_cmd):
-        if (self._process == None):
-            raise NameError("subprocess is none")
-        
-        query_cmd += "\n"
-        self._out_data = ""
-        
-        self._write_ready = False
-        self._process.stdin.flush()
-        self._process.stdin.write(query_cmd)
-        self._write_ready = True
-        
+
+    def is_session(self):
+        self._lock_excute.acquire()
+        is_session = self._is_session
+        self._lock_excute.release()
+        return is_session
+    
     def query(self, query_cmd):
         self._lock_excute.acquire()
         data = ""
@@ -127,13 +125,26 @@ class pydbgpd_stub:
         
         if not len(data):
             self._query(query_cmd)
-            data = self.listenData()
+            data = self._listenData()
             data = data[:-1]
             
         self._lock_excute.release()
         return data
         
-    def listenData(self):
+    def _query(self, query_cmd):
+        if not self._process:
+            raise NameError("subprocess is none")
+        
+        query_cmd += "\n"
+        self._out_data = ""
+        
+        self._write_ready = False
+        self._process.stdin.flush()
+        self._process.stdin.write(query_cmd)
+        self._write_ready = True
+        
+                
+    def _listenData(self):
         self._write_ready = True
         while True:
             if (self._stop_thread):
@@ -141,26 +152,22 @@ class pydbgpd_stub:
             if len(self._out_data) > 0:
                 ret = ""
                 if self._out_data[-3] == "@":
-                    print "Switch to Session \n"
+                    ##print "Switch to Session \n"
                     self._is_session = True
                     try:
                         ret = base64.b64decode(self._out_data[:-3])
                     except Exception,errinfo:
-                        print "listenData Session error" + self._out_data + "\n"
+                        print "_listenData Session error" + self._out_data + "\n"
                     return ret
                 elif self._out_data[-3] == ":":
                     self._is_session = False
-                    print "Switch to No Session \n"
+                    #print "Switch to No Session \n"
                     try:
                         ret = base64.b64decode(self._out_data[:-3])
                     except Exception,errinfo:
-                        print "listenData No Session error" + self._out_data + "\n"
+                        print "_listenData No Session error" + self._out_data + "\n"
                     return ret
             time.sleep(0.01) 
-    
-    def is_session(self):
-        #print self._is_session
-        return self._is_session
     
     def _read_stdout_thread(self):
         while True:
@@ -183,7 +190,7 @@ if __name__ == "__main__":
     #print "Listen   " + sub.query('listen -p 192.168.41.1:9000 start')
     print "Listen   " + sub.query('listen -p localhost:9010 start')
     print "Help   " + sub.query('help')
-    #sub.listenData()
+    #sub._listenData()
     
     time.sleep(20)
     sub.stop()

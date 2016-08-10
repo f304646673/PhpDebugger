@@ -165,7 +165,6 @@ class debugger:
                 self._debugger_helper.do("run","")
             if status_ret["status"] == 4:
                 break
-            time.sleep(0.5)
             status_ret = self._debugger_helper.do("status","")
             
         if status_ret["status"] != 0:

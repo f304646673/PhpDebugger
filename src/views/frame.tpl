@@ -3,7 +3,7 @@
         <link rel="stylesheet" type="text/css" href="/files/third/jquery-easyui-1.4.5/themes/default/easyui.css">
         <link rel="stylesheet" type="text/css" href="/files/third/jquery-easyui-1.4.5/themes/icon.css">
         <link rel="stylesheet" href="/files/third/highlight/styles/tomorrow-night-eighties.css"></link>
-        <link rel="stylesheet" type="text/css" href="/files/debugger.css">
+        <link rel="stylesheet" type="text/css" href="/files/themes/debugger.css">
         
         <script src="/files/third/jquery3_1/jquery-3.1.0.js" type="text/javascript"></script>
         
@@ -40,20 +40,20 @@
     <body>
         <div id="php_debugger" class="easyui-window" title="Php Debugger" data-options="iconCls:'icon-sum',footer:'#ft'" style="width:100%;height:950px;min-width:800px;min-height:800px;padding:0px;top:0;">
             <div class="easyui-layout" style="width:100%;height:100%;">
-                <div data-options="region:'north'" style="height:63px;width:100%;">
-                    <div class="easyui-panel" style="padding:0px;" style="width:100%;height:100%;">
+                <div data-options="region:'north'" style="height:60px;width:100%;">
+                    <div class="easyui-panel" style="padding:0px;" style="width:100%;height:30px;">
                         <a href="#" class="easyui-linkbutton" data-options="plain:true">Home</a>
                         <a href="#" class="easyui-menubutton" data-options="menu:'#mm1',iconCls:'icon-edit'">Edit</a>
                         <a href="#" class="easyui-menubutton" data-options="menu:'#mm2',iconCls:'icon-help'">Help</a>
                         <a href="#" class="easyui-menubutton" data-options="menu:'#mm3'">About</a>
                         <a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="$('#console_dlg').dialog('open')">Console</a>
                     </div>
-                    <div style="padding:1px 0;">
-                        <a href="#" id="start_stop_debug" radio="stop" class="easyui-linkbutton" style="hight:30px;width:70px">Start</a>
-                        <a href="#" class="easyui-linkbutton" style="hight:30px;width:70px" onclick="run()">Run</a>
-                        <a href="#" class="easyui-linkbutton" style="hight:30px;width:70px" onclick="step_over()">Step Over</a>
-                        <a href="#" class="easyui-linkbutton" style="hight:30px;width:70px" onclick="step_in()">Step In</a>
-                        <a href="#" class="easyui-linkbutton" style="hight:30px;width:70px" onclick="step_out()">Step Out</a>
+                    <div class="easyui-panel" style="width:100%;height:30px;">
+                        <input id="start_stop_debug" class="easyui-switchbutton" style="hight:30px;width:70px">
+                        <a href="#" id="run_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-run',plain:true" onclick="run()"></a>
+                        <a href="#" id="step_over_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-step-over',plain:true" onclick="step_over()"></a>
+                        <a href="#" id="step_in_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-step-in',plain:true" onclick="step_in()"></a>
+                        <a href="#" id="step_out_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-step-out',plain:true" onclick="step_out()"></a>
                     </div>
                 </div>
                 <div data-options="region:'south',split:true" style="height:200px;">
@@ -103,7 +103,7 @@
                         </div>
                     </div>
                 </div>
-                <div  title="Floders" style="width:15%;min-width:200px" data-options="region:'east',split:true,tools:[{
+                <div  title="Floders" style="width:15%;min-width:200px" data-options="region:'east',iconCls:'icon-floder',split:true,tools:[{
                             iconCls:'icon-reload',
                             handler:function(){floder_reload();}
                         },{
@@ -129,7 +129,7 @@
                         </div>
                     </div>
                 </div>
-                <div data-options="region:'center',title:'Source',iconCls:'icon-ok'" style="">
+                <div data-options="region:'center',title:'Source',iconCls:'icon-page'" style="">
                     <div class="easyui-tabs" id="files_tab" data-options="fit:true,border:false,plain:true,tools:'#files_tab_tools'">
                     </div>
                 </div>

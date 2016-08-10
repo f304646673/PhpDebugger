@@ -57,3 +57,27 @@ code.has-numbering {
     border: 1px solid #aaa;
     padding: 0.5em 1.5em;
 }
+
+.icon-step-over{
+	background:url('icons/step_over.png') no-repeat center center;
+}
+
+.icon-step-in{
+	background:url('icons/step_in.png') no-repeat center center;
+}
+
+.icon-step-out{
+	background:url('icons/step_out.png') no-repeat center center;
+}
+
+.icon-run{
+	background:url('icons/run.png') no-repeat center center;
+}
+
+.icon-floder{
+	background:url('icons/floder.png') no-repeat center center;
+}
+
+.icon-page{
+	background:url('icons/page.png') no-repeat center center;
+}

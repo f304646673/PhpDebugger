@@ -89,7 +89,7 @@ def request_do_post():
     global debugger
     (ret,type) = debugger.do(action, param);
     if type == "json":
-        print ret
+        #print ret
         return json.dumps(ret)
     else:
         return template('index', **request.forms)
@@ -138,6 +138,6 @@ def hello():
 
 if __name__ == "__main__":
     try:
-        run(host='localhost', port=8085, debug=False)
+        run(host='localhost', port=8085, debug=True)
     except Exception as e:
         print e
