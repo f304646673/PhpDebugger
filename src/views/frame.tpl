@@ -8,6 +8,7 @@
         <script src="/files/third/jquery3_1/jquery-3.1.0.js" type="text/javascript"></script>
         
         <script type="text/javascript" src="/files/files_watch.js"></script>
+        <script type="text/javascript" src="/files/variables_watch.js"></script>
         <script type="text/javascript" src="/files/debug.js"></script>
         <script type="text/javascript" src="/files/files_tree.js"></script>
         <script type="text/javascript" src="/files/view.js"></script>
@@ -41,15 +42,15 @@
     <body>
         <div id="php_debugger" class="easyui-window" title="Php Debugger" data-options="iconCls:'icon-sum',footer:'#ft'" style="width:100%;height:900px;min-width:900px;min-height:800px;padding:0px;top:0;">
             <div class="easyui-layout" style="width:100%;height:100%;min-width:800px;padding:0px;">
-                <div data-options="region:'north'"style="height:60px;width:100%;min-height:60px;min-width:800px">
-                    <div class="easyui-panel" style="padding:0px;" style="width:100%;height:30px;min-height:30px;min-width:800px">
+                <div data-options="region:'north',split:false"style="height:60px;width:100%;min-height:60px;min-width:800px;">
+                    <div class="easyui-panel" style="padding:0px;" style="width:100%;height:30px;min-height:30px;min-width:800px;border:1px;">
                         <a href="#" class="easyui-linkbutton" data-options="plain:true">Home</a>
                         <a href="#" class="easyui-menubutton" data-options="menu:'#tools_memu_content',iconCls:'icon-tools'">Tools</a>
                         <a href="#" class="easyui-menubutton" data-options="menu:'#help_memu_content',iconCls:'icon-help-fl'">Help</a>
                         <a href="#" class="easyui-menubutton" data-options="menu:'#about_memu_content',iconCls:'icon-about'">About</a>
                         <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-console',plain:true" onclick="$('#console_dlg').dialog('open')">Console</a>
                     </div>
-                    <div class="easyui-panel" style="padding:0px;"  style="width:100%;height:30px;min-height:30px;min-width:800px">
+                    <div class="easyui-panel" style="padding:0px;"  style="width:100%;height:30px;min-height:30px;min-width:800px;border:1px;">
                         <input id="start_stop_debug" class="easyui-switchbutton" style="hight:30px;width:70px">
                         <a href="#" id="run_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-run',plain:true" onclick="run()" disabled></a>
                         <a href="#" id="step_over_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-step-over',plain:true" onclick="step_over()" disabled></a>
@@ -57,7 +58,7 @@
                         <a href="#" id="step_out_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-step-out',plain:true" onclick="step_out()" disabled></a>
                     </div>
                 </div>
-                <div data-options="region:'south',split:true" style="height:200px;">
+                <div data-options="region:'south',split:true" style="height:200px;min-height:40px;">
                     <div class="easyui-tabs" id="botton_tab" data-options="fit:true,border:false,plain:true,tabWidth:135,">
                         <div title="Variables" style="padding:5px" data-options="tools:'#botton_variables_tab_tools'">
                             <table id="variables_treegrid" class="easyui-treegrid" style="width:100%;height:100%" data-options="idField:'id',treeField:'name'">
@@ -118,7 +119,7 @@
                             handler:function(){floder_reload();}
                         },{
                             iconCls:'icon-add',
-                            handler:function(){floder_add();}
+                            handler:function(){floder_add_dlg_open();}
                         },{
                             iconCls:'icon-remove',
                             handler:function(){floder_remove();}
@@ -173,8 +174,8 @@
         </div>
                         
         <div id="add_floder_dlg_buttons">
-            <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="floder_add_request()" style="width:90px">Save</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#add_floder_dlg').dialog('close')" style="width:90px">Cancel</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="floder_add_request();" style="width:90px">Save</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="floder_add_dlg_close();" style="width:90px">Cancel</a>
         </div>                        
         
         <div id="add_files_watch_dlg" class="easyui-dialog" style="width:400px;height:150px;padding:10px 20px"
@@ -185,11 +186,27 @@
                     <input name="add_file_watch_path" class="easyui-textbox" style="width:350px;" required="true">
                 </div>
             </form>          
-        </div>     
+        </div>
+                        
         <div id="add_files_watch_dlg_buttons">
-            <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="add_file_watch_request()" style="width:90px">Save</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#add_files_watch_dlg').dialog('close')" style="width:90px">Cancel</a>
-        </div>      
+            <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="add_file_watch_request();" style="width:90px">Save</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="add_files_watch_dlg_close();" style="width:90px">Cancel</a>
+        </div>    
+                        
+        <div id="add_variables_watch_dlg" class="easyui-dialog" style="width:400px;height:150px;padding:10px 20px"
+            closed="true" buttons="#add_variables_watch_dlg_buttons">
+            <form id="add_variables_watch_add_dlg_fm" url="add_variable_watch" method="get" novalidate>
+                <div class="fitem">
+                    <label>Variable Name:</label>
+                    <input name="add_variable_watch_name" class="easyui-textbox" style="width:350px;" required="true">
+                </div>
+            </form>          
+        </div>
+                          
+        <div id="add_variables_watch_dlg_buttons">
+            <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="add_variable_watch_request();" style="width:90px">Save</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="add_variables_watch_dlg_close();" style="width:90px">Cancel</a>
+        </div>    
         
         <div id="tools_memu_content" style="width:150px;">
             <div data-options="iconCls:'icon-add'" onclick="javascript:$('#breakpoint_add_dialog').dialog('open');">Add Breakpoint</div>

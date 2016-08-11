@@ -9,6 +9,11 @@ function add_files_watch_dlg_open() {
     $('#add_files_watch_add_dlg_fm').form('clear');
 }
 
+function add_files_watch_dlg_close() {
+    $('#add_files_watch_add_dlg_fm').form('clear');
+    $('#add_files_watch_dlg').dialog('open').dialog('close');
+}
+
 function add_file_watch_request() {
     path = $('#add_files_watch_add_dlg_fm div .textbox .textbox-value').val();
     path_en = base64_encode(path);

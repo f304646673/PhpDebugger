@@ -87,9 +87,14 @@ function files_tree_build() {
     });
 }
 
-function floder_add() {
+function floder_add_dlg_open() {
     $('#add_floder_dlg').dialog('open').dialog('center').dialog('setTitle','Add Floder');
     $('#add_floder_dlg_fm').form('clear');
+}
+
+function floder_add_dlg_close() {
+    $('#add_floder_dlg_fm').form('clear');
+    $('#add_floder_dlg').dialog('close');
 }
 
 function floder_add_request() {
