@@ -10,6 +10,7 @@ from dbgp.client import *
 
 import os
 import json
+import md5
 from pydbgpd_helper import pydbgpd_helper
 from files_tree_build import files_tree_build_json
 from ide_config import ide_config
@@ -130,8 +131,10 @@ def request_files_watch():
         files_info = []
         for item in files:
             item_info = {}
-            item_info["id"] = base64.b64encode(item)
-            item_info["path"] = item
+            m1 = md5.new()   
+            m1.update(item)
+            item_info["id"] = m1.hexdigest()
+            item_info["path"] = base64.b64encode(item)
             item_info["name"] = os.path.basename(item)
             files_info.append(item_info)
         ret = {"ret":1, "list":files_info}
@@ -147,6 +150,36 @@ def request_files_watch():
     elif "get_file" == action:
         fw = files_watch()
         return fw.get_file_content(filepath_de, 50)
+    
+@route("/variables_watch", method='get')
+def request_variables_watch():
+    action = request.query.action
+    variable_name_en = request.query.param
+    variable_name_de = base64.b64decode(variable_name_en);
+    ide_cfg = ide_config()
+    
+    if "get_list" == action:
+        variable_names = ide_cfg.get_watch_variable()
+        variable_names_info = []
+        for item in variable_names:
+            item_info = {}
+            m1 = md5.new()   
+            m1.update(item)
+            item_info["id"] = m1.hexdigest()
+            item_info["name"] = os.path.basename(item)
+            variable_names_info.append(item_info)
+        ret = {"ret":1, "list":variable_names_info}
+        return json.dumps(ret)
+    elif "add" == action:
+        variable_names = ide_cfg.add_watch_variable(variable_name_de)
+        ret = {"ret":1}
+        return json.dumps(ret)
+    elif "remove" == action:
+        variable_names = ide_cfg.remove_watch_variable(variable_name_de)
+        ret = {"ret":1}
+        return json.dumps(ret)
+    elif "get_variable" == action:
+        pass
     
 @route('/getfile', method='POST')
 def getFile():

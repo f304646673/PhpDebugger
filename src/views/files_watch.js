@@ -15,8 +15,8 @@ function add_files_watch_dlg_close() {
 }
 
 function add_file_watch_request() {
-    path = $('#add_files_watch_add_dlg_fm div .textbox .textbox-value').val();
-    path_en = base64_encode(path);
+    var path = $('#add_files_watch_add_dlg_fm div .textbox .textbox-value').val();
+    var path_en = base64_encode(path);
     $.get("files_watch", {"action":"add", "param":path_en},
         function(data){
             
@@ -51,13 +51,16 @@ function getFilesWatch() {
                         title:item.name,
                         content:"",
                         closable:true,
+                        path:item.path,
                         tools:[{
                             iconCls:'icon-mini-refresh',
                             handler:function(){
-                                get_file_last_content(item.id);
+                                get_file_last_content(item.id, item.path);
                             }
-                        }]
+                        }],
                     });
+                    $("#files_watch_tabs").find('#' + item.id).attr("path",item.path);
+                    get_file_last_content(item.id, item.path);
                 }
             }
         },
@@ -72,8 +75,8 @@ function make_file_tab_panel_data(tab_id, data) {
     return "<textarea id='" + make_file_watch_textarea_id(tab_id) + "' style='width:100%;height:100%'>" + data + "</textarea>";
 }
 
-function get_file_last_content(tab_id) {
-    $.get("files_watch", {"action":"get_file", "param":tab_id},
+function get_file_last_content(tab_id,path) {
+    $.get("files_watch", {"action":"get_file", "param":path},
         function(data){
             console.log(data);
             var tab_t = $('#files_watch_tabs').find('#' + tab_id);
@@ -87,7 +90,8 @@ function get_file_last_content(tab_id) {
 
 function get_file_last_content_by_index(tab_index) {
     var tab_id = $("#files_watch_tabs").tabs('getTab',tab_index).panel('options').id;
-    get_file_last_content(tab_id);
+    var path_en = $("#files_watch_tabs").tabs('getTab',tab_index).attr("path");
+    get_file_last_content(tab_id,path_en);
 }
 
 function remove_file_watch(tab_index) {
