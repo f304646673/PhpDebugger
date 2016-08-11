@@ -81,3 +81,19 @@ code.has-numbering {
 .icon-page{
 	background:url('icons/page.png') no-repeat center center;
 }
+
+.icon-console{
+	background:url('icons/console.png') no-repeat center center;
+}
+
+.icon-tools{
+	background:url('icons/tools.png') no-repeat center center;
+}
+
+.icon-help-fl{
+	background:url('icons/help.png') no-repeat center center;
+}
+
+.icon-about{
+	background:url('icons/about.png') no-repeat center center;
+}

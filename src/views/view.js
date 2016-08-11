@@ -257,6 +257,10 @@ function debugger_status_init() {
     $("#start_stop_debug").switchbutton({
         checked:false
     });
+    $("#run_debug").linkbutton('disable');
+    $("#step_over_debug").linkbutton('disable');
+    $("#step_in_debug").linkbutton('disable');
+    $("#step_out_debug").linkbutton('disable');
     remove_run_line_no();
 }
 
@@ -264,6 +268,10 @@ function debugger_status_listen() {
     $("#start_stop_debug").switchbutton({
         checked:true
     });
+    $("#run_debug").linkbutton('enable');
+    $("#step_over_debug").linkbutton('enable');
+    $("#step_in_debug").linkbutton('enable');
+    $("#step_out_debug").linkbutton('enable');
     remove_run_line_no();
 }
 
@@ -271,6 +279,10 @@ function debugger_status_debug() {
     $("#start_stop_debug").switchbutton({
         checked:true
     });
+    $("#run_debug").linkbutton('enable');
+    $("#step_over_debug").linkbutton('enable');
+    $("#step_in_debug").linkbutton('enable');
+    $("#step_out_debug").linkbutton('enable');
     update_cur_source_run_line_no();
 }
 
@@ -384,6 +396,13 @@ function expand(){
     var node = $('#variables_treegrid').treegrid('getSelected');
     if (node){
         $('#variables_treegrid').treegrid('expand', node.id);
+    }
+}
+
+function show_variable_in_dialog_from_menucontent() {
+    var node = $('#variables_treegrid').treegrid('getSelected');
+    if (node){
+        show_variable_in_dialog(node.name, node.value);
     }
 }
 

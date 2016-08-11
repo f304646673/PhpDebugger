@@ -38,22 +38,22 @@
         <title>Cmd Shell</title>
     </head>
     <body>
-        <div id="php_debugger" class="easyui-window" title="Php Debugger" data-options="iconCls:'icon-sum',footer:'#ft'" style="width:100%;height:950px;min-width:800px;min-height:800px;padding:0px;top:0;">
-            <div class="easyui-layout" style="width:100%;height:100%;">
-                <div data-options="region:'north'" style="height:60px;width:100%;">
-                    <div class="easyui-panel" style="padding:0px;" style="width:100%;height:30px;">
+        <div id="php_debugger" class="easyui-window" title="Php Debugger" data-options="iconCls:'icon-sum',footer:'#ft'" style="width:100%;height:900px;min-width:900px;min-height:800px;padding:0px;top:0;">
+            <div class="easyui-layout" style="width:100%;height:100%;min-width:800px;padding:0px;">
+                <div data-options="region:'north'"style="height:60px;width:100%;min-height:60px;min-width:800px">
+                    <div class="easyui-panel" style="padding:0px;" style="width:100%;height:30px;min-height:30px;min-width:800px">
                         <a href="#" class="easyui-linkbutton" data-options="plain:true">Home</a>
-                        <a href="#" class="easyui-menubutton" data-options="menu:'#mm1',iconCls:'icon-edit'">Edit</a>
-                        <a href="#" class="easyui-menubutton" data-options="menu:'#mm2',iconCls:'icon-help'">Help</a>
-                        <a href="#" class="easyui-menubutton" data-options="menu:'#mm3'">About</a>
-                        <a href="#" class="easyui-linkbutton" data-options="plain:true" onclick="$('#console_dlg').dialog('open')">Console</a>
+                        <a href="#" class="easyui-menubutton" data-options="menu:'#tools_memu_content',iconCls:'icon-tools'">Tools</a>
+                        <a href="#" class="easyui-menubutton" data-options="menu:'#help_memu_content',iconCls:'icon-help-fl'">Help</a>
+                        <a href="#" class="easyui-menubutton" data-options="menu:'#about_memu_content',iconCls:'icon-about'">About</a>
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-console',plain:true" onclick="$('#console_dlg').dialog('open')">Console</a>
                     </div>
-                    <div class="easyui-panel" style="width:100%;height:30px;">
+                    <div class="easyui-panel" style="padding:0px;"  style="width:100%;height:30px;min-height:30px;min-width:800px">
                         <input id="start_stop_debug" class="easyui-switchbutton" style="hight:30px;width:70px">
-                        <a href="#" id="run_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-run',plain:true" onclick="run()"></a>
-                        <a href="#" id="step_over_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-step-over',plain:true" onclick="step_over()"></a>
-                        <a href="#" id="step_in_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-step-in',plain:true" onclick="step_in()"></a>
-                        <a href="#" id="step_out_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-step-out',plain:true" onclick="step_out()"></a>
+                        <a href="#" id="run_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-run',plain:true" onclick="run()" disabled></a>
+                        <a href="#" id="step_over_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-step-over',plain:true" onclick="step_over()" disabled></a>
+                        <a href="#" id="step_in_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-step-in',plain:true" onclick="step_in()" disabled></a>
+                        <a href="#" id="step_out_debug" class="easyui-linkbutton" style="hight:30px;width:30px" data-options="iconCls:'icon-step-out',plain:true" onclick="step_out()" disabled></a>
                     </div>
                 </div>
                 <div data-options="region:'south',split:true" style="height:200px;">
@@ -103,7 +103,7 @@
                         </div>
                     </div>
                 </div>
-                <div  title="Floders" style="width:15%;min-width:200px" data-options="region:'east',iconCls:'icon-floder',split:true,tools:[{
+                <div  title="Floders" style="width:15%;min-width:200px" data-options="region:'west',iconCls:'icon-floder',split:true,tools:[{
                             iconCls:'icon-reload',
                             handler:function(){floder_reload();}
                         },{
@@ -115,19 +115,6 @@
                         }]">
                     <ul id="files_tree" class="easyui-tree" data-options="animate:true,dnd:true,lines:true">
                     </ul>
-                </div>
-                <div data-options="region:'west',split:true" title="Help" style="width:10%;">
-                    <div class="easyui-accordion" data-options="fit:true,border:false">
-                        <div title="Breakpoint" style="padding:10px;">
-                            Breakpoint...
-                        </div>
-                        <div title="Variables" data-options="selected:true" style="padding:10px;">
-                            Variables...
-                        </div>
-                        <div title="Debug" style="padding:10px">
-                            Debug...
-                        </div>
-                    </div>
                 </div>
                 <div data-options="region:'center',title:'Source',iconCls:'icon-page'" style="">
                     <div class="easyui-tabs" id="files_tab" data-options="fit:true,border:false,plain:true,tools:'#files_tab_tools'">
@@ -170,8 +157,8 @@
             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#add_floder_dlg').dialog('close')" style="width:90px">Cancel</a>
         </div>
         
-        <div id="mm1" style="width:150px;">
-            <div data-options="iconCls:'icon-undo'">Undo</div>
+        <div id="tools_memu_content" style="width:150px;">
+            <div data-options="iconCls:'icon-add'" onclick="javascript:$('#breakpoint_add_dialog').dialog('open');">Add Breakpoint</div>
             <div data-options="iconCls:'icon-redo'">Redo</div>
             <div class="menu-sep"></div>
             <div>Cut</div>
@@ -193,15 +180,14 @@
             <div>Select All</div>
         </div>
                         
-        <div id="mm2" style="width:100px;">
-            <div>Help</div>
-            <div>Update</div>
-            <div>About</div>
+        <div id="help_memu_content" style="width:100px;">
+            <div onclick=" window.open('https://github.com/f304646673/PhpDebugger');">Help</div>
+            <div onclick=" window.open('https://github.com/f304646673/PhpDebugger');">Source Code</div>
         </div>
                         
-        <div id="mm3" class="menu-content" style="background:#f0f0f0;padding:10px;text-align:left">
-            <img src="http://www.jeasyui.com/images/logo1.png" style="width:150px;height:50px">
-            <p style="font-size:14px;color:#444;">Try jQuery EasyUI to build your modern, interactive, javascript applications.</p>
+        <div id="about_memu_content" class="menu-content" style="background:#f0f0f0;padding:10px;text-align:left">
+            <img src="/files/themes/img/about.png" style="width:437px;height:131px">
+            <p style="font-size:14px;color:#444;">https://github.com/f304646673/PhpDebugger.git</p>
         </div>
         
         <div id="console_dlg" class="easyui-dialog" title="Debug Console" style="width:900px;height:800px;padding:10px" data-options="resizable:true" closed="true">
@@ -220,7 +206,7 @@
         </div>           
 
         <div id="variables_treegrid_contextmenu" class="easyui-menu" style="width:120px;">
-            <div onclick="show_variable_in_dialog()" data-options="iconCls:'icon-search'">Show</div>
+            <div onclick="show_variable_in_dialog_from_menucontent()" data-options="iconCls:'icon-search'">Show</div>
             <div class="menu-sep"></div>
             <div onclick="collapse()">Collapse</div>
             <div onclick="expand()">Expand</div>
