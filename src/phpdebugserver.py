@@ -14,6 +14,7 @@ from pydbgpd_helper import pydbgpd_helper
 from files_tree_build import files_tree_build_json
 from ide_config import ide_config
 from debugger import debugger
+from files_watch import files_watch
 
 debugger = debugger()
 #sub = pydbgpd_helper()
@@ -116,6 +117,37 @@ def request_files_tree():
         ret = {"ret":1}
         return json.dumps(ret)
     
+@route("/files_watch", method='get')
+def request_files_watch():
+    action = request.query.action
+    filepath_en = request.query.param
+    filepath_de = base64.b64decode(filepath_en);
+    ide_cfg = ide_config()
+    print filepath_en, action
+    
+    if "get_list" == action:
+        files = ide_cfg.get_watch_file()
+        files_info = []
+        for item in files:
+            item_info = {}
+            item_info["id"] = base64.b64encode(item)
+            item_info["path"] = item
+            item_info["name"] = os.path.basename(item)
+            files_info.append(item_info)
+        ret = {"ret":1, "list":files_info}
+        return json.dumps(ret)
+    elif "add" == action:
+        files = ide_cfg.add_watch_file(filepath_de)
+        ret = {"ret":1}
+        return json.dumps(ret)
+    elif "remove" == action:
+        files = ide_cfg.remove_watch_file(filepath_de)
+        ret = {"ret":1}
+        return json.dumps(ret)
+    elif "get_file" == action:
+        fw = files_watch()
+        return fw.get_file_content(filepath_de, 50)
+    
 @route('/getfile', method='POST')
 def getFile():
     path = request.forms.get("path")
@@ -134,7 +166,6 @@ def getFile():
 @route('/hello')
 def hello():
     return "Hello World!"
-
 
 if __name__ == "__main__":
     try:

@@ -7,6 +7,7 @@
         
         <script src="/files/third/jquery3_1/jquery-3.1.0.js" type="text/javascript"></script>
         
+        <script type="text/javascript" src="/files/files_watch.js"></script>
         <script type="text/javascript" src="/files/debug.js"></script>
         <script type="text/javascript" src="/files/files_tree.js"></script>
         <script type="text/javascript" src="/files/view.js"></script>
@@ -57,7 +58,7 @@
                     </div>
                 </div>
                 <div data-options="region:'south',split:true" style="height:200px;">
-                    <div class="easyui-tabs" id="botton_tab" data-options="fit:true,border:false,plain:true">
+                    <div class="easyui-tabs" id="botton_tab" data-options="fit:true,border:false,plain:true,tabWidth:135,">
                         <div title="Variables" style="padding:5px" data-options="tools:'#botton_variables_tab_tools'">
                             <table id="variables_treegrid" class="easyui-treegrid" style="width:100%;height:100%" data-options="idField:'id',treeField:'name'">
                                 <thead>
@@ -69,7 +70,7 @@
                                 </thead>
                             </table>
                         </div>
-                        <div title="Stack" style="padding:5px" data-options="tools:'#botton_stack_tab_tools'">
+                        <div title="Stack" style="padding:5px;" data-options="tools:'#botton_stack_tab_tools'">
                             <table class="easyui-datagrid" id="stack_datagrid" style="width:100%;height:100%" data-options="singleSelect:true">
                                 <thead>
                                     <tr>
@@ -100,6 +101,15 @@
                                     </tr>
                                 </thead>
                             </table>  
+                        </div>
+                        <div title="Files Watch" style="padding:5px;" data-options="tools:'#botton_files_watch_tab_tools'">
+                            <div id="files_watch_tabs" class="easyui-tabs" style="width:100%;height:100%;">
+                            </div>
+                        </div>
+                        
+                        <div title="Variables Watch" style="padding:5px;" data-options="tools:'#botton_variables_watch_tab_tools'">
+                            <div id="variables_watch_tabs" class="easyui-tabs" style="width:100%;height:100%;">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -136,6 +146,16 @@
             <a href="javascript:void(0)" class="icon-mini-refresh" onclick="getBreakpoint()"></a>
         </div>
         
+        <div id="botton_files_watch_tab_tools">
+            <a href="javascript:void(0)" class="icon-mini-add" onclick="add_files_watch_dlg_open();"></a>
+            <a href="javascript:void(0)" class="icon-mini-refresh" onclick="getFilesWatch()"></a>
+        </div>
+                 
+        <div id="botton_variables_watch_tab_tools">
+            <a href="javascript:void(0)" class="icon-mini-add" onclick="add_variables_watch_dlg_open();"></a>
+            <a href="javascript:void(0)" class="icon-mini-refresh" onclick="getVariablesWatch()"></a>
+        </div>                        
+                        
         <div id="floders_tools">
             <a href="#" class="icon-reload" onclick="floder_reload()"></a>
             <a href="#" class="icon-add" onclick="floder_add()"></a>
@@ -155,7 +175,21 @@
         <div id="add_floder_dlg_buttons">
             <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="floder_add_request()" style="width:90px">Save</a>
             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#add_floder_dlg').dialog('close')" style="width:90px">Cancel</a>
-        </div>
+        </div>                        
+        
+        <div id="add_files_watch_dlg" class="easyui-dialog" style="width:400px;height:150px;padding:10px 20px"
+            closed="true" buttons="#add_files_watch_dlg_buttons">
+            <form id="add_files_watch_add_dlg_fm" url="add_file_watch" method="get" novalidate>
+                <div class="fitem">
+                    <label>Files Path:</label>
+                    <input name="add_file_watch_path" class="easyui-textbox" style="width:350px;" required="true">
+                </div>
+            </form>          
+        </div>     
+        <div id="add_files_watch_dlg_buttons">
+            <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="add_file_watch_request()" style="width:90px">Save</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#add_files_watch_dlg').dialog('close')" style="width:90px">Cancel</a>
+        </div>      
         
         <div id="tools_memu_content" style="width:150px;">
             <div data-options="iconCls:'icon-add'" onclick="javascript:$('#breakpoint_add_dialog').dialog('open');">Add Breakpoint</div>

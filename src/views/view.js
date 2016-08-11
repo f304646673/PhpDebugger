@@ -75,6 +75,24 @@ $(document).ready(function(){
         }
     });
         
+    $("#files_watch_tabs").tabs({
+        onBeforeClose:function(title,index) {
+            return remove_file_watch(index);
+        }
+    });
+    
+    $("#files_watch_tabs").tabs({
+        onSelect:function(title,index) {
+            get_file_last_content_by_index(index);
+        }
+    });
+    
+    $("#botton_tab").tabs({
+        onSelect:function(title,index) {
+            update_cur_selected_tab_info();
+        }
+    });
+    
     update_debugger_status();
 });
 
@@ -141,7 +159,7 @@ function get_cur_file_path() {
 }
 
 function openFiles(name,path,id){
-    var exists = $('#' + id);
+    var exists = $("#files_tab").find('#' + id);
     if (exists.length> 0) {
         $("#files_tab pre").each(function(index){
              if ($(this).get(0).id == id) {
@@ -429,5 +447,9 @@ function update_cur_selected_tab_info() {
         case "Breakpoint":{
                 getBreakpoint();
             }break;
+        case 'Files Watch':{
+                getFilesWatch();
+            }break;   
+         
     }
 }
