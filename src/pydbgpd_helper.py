@@ -183,11 +183,10 @@ class pydbgpd_helper:
         for (key,value) in breakpoint_set_type_keys[breakpointinfo["type"]].items():
             if value == "-c":
                 expression_de = base64.b64decode(breakpointinfo[key])
-                query = query + " " + value + " '" + expression_de + " '"
+                query = query + " " + value + " '" + expression_de + " '"       #maybe bug if expression_de has '
             else:
                 query = query + " " + value + " " + breakpointinfo[key]
 
-        print query
         data = self._pydbgpd.query(query)
         iteminfo = self._parse_breakpoint_info(data)
         if not iteminfo:

@@ -12,16 +12,6 @@ $(document).ready(function(){
     }, 100);
 
 
-    $('#console_dlg_cmd').textbox('textbox').bind('keydown', function(e){
-        if (e.keyCode == 13){	// when press ENTER key, accept the inputed value.
-            excute_console_cmd($(this).val());
-            $('#console_dlg_cmd').textbox('setValue', '');
-        }
-    });
-
-    $('#console_dlg_div').layout();
-
-
     $('#breakpoint_add_line_form').form('submit', {
         url:"do",
         onSubmit: function(param){
@@ -47,13 +37,13 @@ $(document).ready(function(){
         onSelect: function(title,index){
             switch (title) {
                 case "Variables": {
-                        getVariables()
+                        get_variables_list()
                     }break;
                 case "Stack":{
-                        getStack()
+                        get_stack_list()
                     }break;
                 case "Breakpoint":{
-                        getBreakpoint()
+                        get_breakpoint_list()
                     }break;
             }
         }
@@ -72,18 +62,6 @@ $(document).ready(function(){
                 stop_debug();
             }
             console.log(checked);
-        }
-    });
-        
-    $("#files_watch_tabs").tabs({
-        onBeforeClose:function(title,index) {
-            return remove_file_watch(index);
-        }
-    });
-    
-    $("#files_watch_tabs").tabs({
-        onSelect:function(title,index) {
-            get_file_last_content_by_index(index);
         }
     });
     
@@ -152,10 +130,6 @@ function update_files(id,path) {
             update_file_line_breakpoint(id,path);
             update_cur_run_line_no();
         }, "json");
-}
-
-function get_cur_file_path() {
-    
 }
 
 function openFiles(name,path,id){
@@ -231,10 +205,6 @@ function set_current_run_line_no(file_id, run_line) {
     }
 }
 
-function append_debug_view(text) {
-    var new_text = $('#console_dlg_view').textbox("getText") + "\n" +  text;
-    $('#console_dlg_view').textbox("setValue",new_text);
-}
 
 function update_debugger_status() {
      $.post("do", {"action":"get_debugger_status", "param":""},
@@ -365,91 +335,23 @@ function rebuild_statck_info(data) {
     });
 }
 
-function getVariables() {
-    $('#variables_treegrid').treegrid('loadData', []);
-    RegisteVariablesContextMenu();
-    RegistVariablesDbClick();
-    
-    $.post("variables", {"action":"", "param":""},
-        function(data){
-            if (data.ret == 1) {
-                $('#variables_treegrid').treegrid('loadData', data.data);
-            }
-    }, "json");
-}
-
-function RegistVariablesDbClick() {
-    $('#variables_treegrid').treegrid({onDblClickCell:function(field,row){
-            if (row){
-                if (field == "value" && row.type !="") {
-                    show_variable_in_dialog(row.name, row.value);
-                }
-            }
-        }
-    });
-}
-
-function RegisteVariablesContextMenu() {                 
-    $('#variables_treegrid').treegrid({onContextMenu:function(e, row){
-            if (row){
-                e.preventDefault();
-                $(this).treegrid('select', row.id);
-                $('#variables_treegrid_contextmenu').menu('show',{
-                    left: e.pageX,
-                    top: e.pageY
-                });                
-            }
-        }
-    });
-}
-
-function collapse(){
-    var node = $('#variables_treegrid').treegrid('getSelected');
-    if (node){
-        $('#variables_treegrid').treegrid('collapse', node.id);
-    }
-}
-
-function expand(){
-    var node = $('#variables_treegrid').treegrid('getSelected');
-    if (node){
-        $('#variables_treegrid').treegrid('expand', node.id);
-    }
-}
-
-function show_variable_in_dialog_from_menucontent() {
-    var node = $('#variables_treegrid').treegrid('getSelected');
-    if (node){
-        show_variable_in_dialog(node.name, node.value);
-    }
-}
-
-function show_variable_in_dialog(name, data) {
-    $('#variables_show_json-renderer').empty();
-    var options = {
-        collapsed: $('#collapsed').is(':checked'),
-        withQuotes: $('#with-quotes').is(':checked')
-    };
-    eval("var theJsonValue = "+ data); 
-    $('#variables_show_json-renderer').jsonViewer(theJsonValue, options);
-    $('#variables_show').dialog('open').dialog('center').dialog('setTitle',name);
-}
-
 function update_cur_selected_tab_info() {
     var tab = $('#botton_tab').tabs('getSelected');
     switch (tab.panel('options').title) {
         case "Variables": {
-                getVariables();
+                get_variables_list();
             }break;
         case "Stack":{
-                getStack();
+                get_stack_list();
             }break;
         case "Breakpoint":{
-                getBreakpoint();
+                get_breakpoint_list();
             }break;
         case 'Files Watch':{
-                getFilesWatch();
+                get_files_watch();
             }break;   
-         
+        case 'Files Watch':{
+                get_variables_watch();
+            }break; 
     }
 }

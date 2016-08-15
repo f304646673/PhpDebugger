@@ -4,6 +4,21 @@
  * and open the template in the editor.
  */
 
+$(document).ready(function(){
+    $("#files_watch_tabs").tabs({
+        onBeforeClose:function(title,index) {
+            return remove_file_watch(index);
+        }
+    });
+    
+    $("#files_watch_tabs").tabs({
+        onSelect:function(title,index) {
+            get_file_last_content_by_index(index);
+        }
+    });
+    
+});
+
 function add_files_watch_dlg_open() {
     $('#add_files_watch_dlg').dialog('open').dialog('center').dialog('setTitle','Add a File Watch');
     $('#add_files_watch_add_dlg_fm').form('clear');
@@ -20,7 +35,7 @@ function add_file_watch_request() {
     $.get("files_watch", {"action":"add", "param":path_en},
         function(data){
             
-            getFilesWatch();
+            get_files_watch();
             console.log(data);
         }, 
         "json");
@@ -36,7 +51,7 @@ function check_file_watch_tab_exist(id) {
     return false;
 }
 
-function getFilesWatch() {
+function get_files_watch() {
     $.get("files_watch", {"action":"get_list", "param":""},
         function(data){
             console.log(data);

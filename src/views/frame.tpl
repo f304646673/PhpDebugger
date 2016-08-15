@@ -7,6 +7,9 @@
         
         <script src="/files/third/jquery3_1/jquery-3.1.0.js" type="text/javascript"></script>
         
+        <script type="text/javascript" src="/files/console.js"></script>
+        <script type="text/javascript" src="/files/variables.js"></script>
+        <script type="text/javascript" src="/files/breakpoint.js"></script>
         <script type="text/javascript" src="/files/files_watch.js"></script>
         <script type="text/javascript" src="/files/variables_watch.js"></script>
         <script type="text/javascript" src="/files/debug.js"></script>
@@ -143,7 +146,7 @@
         </div>
         
         <div id="botton_breakpoint_tab_tools">
-            <a href="javascript:void(0)" class="icon-mini-add" onclick="javascript:$('#breakpoint_add_dialog').dialog('open')"></a>
+            <a href="javascript:void(0)" class="icon-mini-add" onclick="breakpoint_add_dialog_open();"></a>
             <a href="javascript:void(0)" class="icon-mini-refresh" onclick="getBreakpoint()"></a>
         </div>
         
@@ -209,7 +212,7 @@
         </div>    
         
         <div id="tools_memu_content" style="width:150px;">
-            <div data-options="iconCls:'icon-add'" onclick="javascript:$('#breakpoint_add_dialog').dialog('open');">Add Breakpoint</div>
+            <div data-options="iconCls:'icon-add'" onclick="breakpoint_add_dialog_open();">Add Breakpoint</div>
             <div data-options="iconCls:'icon-redo'">Redo</div>
             <div class="menu-sep"></div>
             <div>Cut</div>
@@ -245,7 +248,7 @@
             <div id="console_dlg_div" style="width:100%;height:100%;">
                 <div data-options="region:'center'" style="width:100%;">
                     <div style="margin:0px 0;width:100%;height:100%">
-                        <input id="console_dlg_view" class="easyui-textbox" data-options="multiline:true" value="" style="width:100%;height:100%" readonly="true">
+                        <textarea id="console_dlg_view" style="width:100%;height:100%;" readonly="true"></textarea>
                     </div>
                 </div>
                 <div data-options="region:'south'" style="height:26px;width:100%;">
@@ -259,8 +262,8 @@
         <div id="variables_treegrid_contextmenu" class="easyui-menu" style="width:120px;">
             <div onclick="show_variable_in_dialog_from_menucontent()" data-options="iconCls:'icon-search'">Show</div>
             <div class="menu-sep"></div>
-            <div onclick="collapse()">Collapse</div>
-            <div onclick="expand()">Expand</div>
+            <div onclick="variables_treegrid_contextmenu_collapse()">Collapse</div>
+            <div onclick="variables_treegrid_contextmenu_expand()">Expand</div>
         </div>
                         
         <div id="ft" style="padding:5px;">Footer Content.</div>

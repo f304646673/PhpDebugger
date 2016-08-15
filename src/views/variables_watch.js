@@ -19,7 +19,7 @@ function add_variable_watch_request() {
     var variable_name_en = base64_encode(variable_name_de);
     $.get("variables_watch", {"action":"add", "param":variable_name_en},
         function(data){
-            getVariablesWatch();
+            get_variables_watch();
             console.log(data);
         }, 
         "json");
@@ -35,7 +35,7 @@ function check_variable_watch_tab_exist(id) {
     return false;
 }
 
-function getVariablesWatch() {
+function get_variables_watch() {
     $.get("variables_watch", {"action":"get_list", "param":""},
         function(data){
             console.log(data);
