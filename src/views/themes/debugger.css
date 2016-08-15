@@ -74,8 +74,8 @@ code.has-numbering {
 	background:url('icons/run.png') no-repeat center center;
 }
 
-.icon-floder{
-	background:url('icons/floder.png') no-repeat center center;
+.icon-folder{
+	background:url('icons/folder.png') no-repeat center center;
 }
 
 .icon-page{
@@ -90,10 +90,34 @@ code.has-numbering {
 	background:url('icons/tools.png') no-repeat center center;
 }
 
+.icon-files-watch-add{
+	background:url('icons/files_watch_add.png') no-repeat center center;
+}
+
+.icon-variables-watch-add{
+	background:url('icons/variables_watch_add.png') no-repeat center center;
+}
+
 .icon-help-fl{
 	background:url('icons/help.png') no-repeat center center;
 }
 
 .icon-about{
 	background:url('icons/about.png') no-repeat center center;
+}
+
+.icon-folder-add{
+	background:url('icons/folder_add.png') no-repeat center center;
+}
+
+.icon-folder-del{
+	background:url('icons/folder_delete.png') no-repeat center center;
+}
+
+.icon-folder-explore{
+	background:url('icons/folder_explore.png') no-repeat center center;
+}
+
+.icon-breakpoint-add{
+	background:url('icons/breakpoint_add.png') no-repeat center center;
 }

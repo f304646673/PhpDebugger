@@ -78,9 +78,9 @@ class files_tree_build_json:
     def walk(self,filepath):
         sub_files_info = {}
         files_info = {}
-        floder_path_modify = filepath.replace('\\', '/')
-        floder_path_modify = "file:///" + floder_path_modify
-        files_info = self.build_floder_info(floder_path_modify.split('/')[-1], floder_path_modify)
+        folder_path_modify = filepath.replace('\\', '/')
+        folder_path_modify = "file:///" + folder_path_modify
+        files_info = self.build_folder_info(folder_path_modify.split('/')[-1], folder_path_modify)
         for (k,v) in files_info.items():
             sub_files_info[k] = v
             
@@ -103,14 +103,14 @@ class files_tree_build_json:
             
         return sub_files_info
                 
-    def build_floder_info(self, floder_name, floder_path):
-        floder_info = {}
-        floder_info["text"] = floder_name
-        floder_info["state"] = "closed"
+    def build_folder_info(self, folder_name, folder_path):
+        folder_info = {}
+        folder_info["text"] = folder_name
+        folder_info["state"] = "closed"
         m1 = md5.new()   
-        m1.update(floder_path) 
-        floder_info["attributes"] = {"path":floder_path , "id": m1.hexdigest()}
-        return floder_info
+        m1.update(folder_path) 
+        folder_info["attributes"] = {"path":folder_path , "id": m1.hexdigest()}
+        return folder_info
     
     def build_file_info(self, file_name, file_path):
         flle_info = {}

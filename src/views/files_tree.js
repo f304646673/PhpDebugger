@@ -87,18 +87,18 @@ function files_tree_build() {
     });
 }
 
-function floder_add_dlg_open() {
-    $('#add_floder_dlg').dialog('open').dialog('center').dialog('setTitle','Add Floder');
-    $('#add_floder_dlg_fm').form('clear');
+function add_folder_dlg_open() {
+    $('#add_folder_dlg').dialog('open').dialog('center').dialog('setTitle','Add Folder');
+    $('#add_folder_dlg_folder_path').textbox('clear');
 }
 
-function floder_add_dlg_close() {
-    $('#add_floder_dlg_fm').form('clear');
-    $('#add_floder_dlg').dialog('close');
+function add_folder_dlg_close() {
+    $('#add_folder_dlg_folder_path').textbox('clear');
+    $('#add_folder_dlg').dialog('close');
 }
 
-function floder_add_request() {
-    path = $('#add_floder_dlg_fm div .textbox .textbox-value').val();
+function folder_add_request() {
+    path = $('#add_folder_dlg_folder_path').textbox("getText");
     path_en = base64_encode(path);
     $.get("files_tree", {"action":"add", "param":path_en},
         function(data){
@@ -106,14 +106,14 @@ function floder_add_request() {
     }, "json");
     
     files_tree_build();
-    $('#add_floder_dlg').dialog('close')
+    $('#add_folder_dlg').dialog('close')
 }
 
-function floder_reload() {
+function folder_reload() {
     files_tree_build();
 }
 
-function floder_remove() {
+function folder_remove() {
     var node = $('#files_tree').tree('getSelected');
     if (node){
         path_en = base64_encode(node.attributes.path);

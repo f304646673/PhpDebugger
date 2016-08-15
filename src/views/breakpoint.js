@@ -61,7 +61,7 @@ function add_breakpoint_line_by_dialog() {
     $.post("do", {"action":"add_breakpoint", "param":param_en},
         function(data){
             if (data.ret == 1) {
-                breakpoint_add_dialog_close();
+                add_breakpoint_dlg_close();
             }
             console.log(data);
     }, "json");
@@ -79,7 +79,7 @@ function add_breakpoint_call_by_dialog() {
     $.post("do", {"action":"add_breakpoint", "param":param_en},
         function(data){
             if (data.ret == 1) {
-                breakpoint_add_dialog_close();
+                add_breakpoint_dlg_close();
             }
             console.log(data);
     }, "json");
@@ -97,7 +97,7 @@ function add_breakpoint_return_by_dialog() {
     $.post("do", {"action":"add_breakpoint", "param":param_en},
         function(data){
             if (data.ret == 1) {
-                breakpoint_add_dialog_close();
+                add_breakpoint_dlg_close();
             }
             console.log(data);
     }, "json");
@@ -115,7 +115,7 @@ function add_breakpoint_exception_by_dialog() {
     $.post("do", {"action":"add_breakpoint", "param":param_en},
         function(data){
             if (data.ret == 1) {
-                breakpoint_add_dialog_close();
+                add_breakpoint_dlg_close();
             }
             console.log(data);
     }, "json");
@@ -136,7 +136,7 @@ function add_breakpoint_condition_by_dialog() {
     $.post("do", {"action":"add_breakpoint", "param":param_en},
         function(data){
             if (data.ret == 1) {
-                breakpoint_add_dialog_close();
+                add_breakpoint_dlg_close();
             }
             console.log(data);
     }, "json"); 
@@ -152,7 +152,7 @@ var breakpoint_input_ids = [
         "breakpoint_add_dialog_condition_lineno",
         "breakpoint_add_dialog_condition_expression"];
         
-function breakpoint_add_dialog_open() {
+function add_breakpoint_dlg_open() {
     var i = breakpoint_input_ids.length;
     while (i--) {
         $("#" +breakpoint_input_ids[i]).textbox("clear");
@@ -160,7 +160,7 @@ function breakpoint_add_dialog_open() {
     $('#breakpoint_add_dialog').dialog('open');
 }
 
-function breakpoint_add_dialog_close() {
+function add_breakpoint_dlg_close() {
     $('#breakpoint_add_dialog').dialog('close');
 }
 

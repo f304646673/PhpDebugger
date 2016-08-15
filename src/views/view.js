@@ -8,7 +8,7 @@ var get_status_timer;
 
 $(document).ready(function(){
     setTimeout(function () { 
-        floder_reload();
+        folder_reload();
     }, 100);
 
 
@@ -49,10 +49,6 @@ $(document).ready(function(){
         }
     });
     
-    get_status_timer = $.timer(1000, function(){
-        update_debugger_status();
-    });
-    
      $('#start_stop_debug').switchbutton({
         onChange: function(checked){
             if (checked) {
@@ -70,8 +66,6 @@ $(document).ready(function(){
             update_cur_selected_tab_info();
         }
     });
-    
-    update_debugger_status();
 });
 
 function modify_highlight(id) {
@@ -205,75 +199,6 @@ function set_current_run_line_no(file_id, run_line) {
     }
 }
 
-
-function update_debugger_status() {
-     $.post("do", {"action":"get_debugger_status", "param":""},
-        function(data){
-            console.log(data);
-            if (data.ret == 1) {
-                change_debugger_status(data.status);
-            }
-            else {
-                change_debugger_status(-1);
-            }
-        },
-    "json");
-}
-
-var cur_status = -1;
-//0 Init 1 Listen 2 debug
-function change_debugger_status(status) {
-    if (cur_status == status)
-        return;
-    
-    switch (status) {
-        case -1:
-        case 3:
-            debugger_status_init();
-            break;
-        case 0:
-            debugger_status_listen();
-            break;
-        case 2:
-            debugger_status_debug();
-            break;
-    }
-    cur_status = status;
-}
-
-function debugger_status_init() {
-    $("#start_stop_debug").switchbutton({
-        checked:false
-    });
-    $("#run_debug").linkbutton('disable');
-    $("#step_over_debug").linkbutton('disable');
-    $("#step_in_debug").linkbutton('disable');
-    $("#step_out_debug").linkbutton('disable');
-    remove_run_line_no();
-}
-
-function debugger_status_listen() {
-    $("#start_stop_debug").switchbutton({
-        checked:true
-    });
-    $("#run_debug").linkbutton('enable');
-    $("#step_over_debug").linkbutton('enable');
-    $("#step_in_debug").linkbutton('enable');
-    $("#step_out_debug").linkbutton('enable');
-    remove_run_line_no();
-}
-
-function debugger_status_debug() {
-    $("#start_stop_debug").switchbutton({
-        checked:true
-    });
-    $("#run_debug").linkbutton('enable');
-    $("#step_over_debug").linkbutton('enable');
-    $("#step_in_debug").linkbutton('enable');
-    $("#step_out_debug").linkbutton('enable');
-    update_cur_source_run_line_no();
-}
-
 function update_cur_source_run_line_no() {
     $.post("do", {"action":"get_cur_stack_info", "param":""},
         function(data){
@@ -311,30 +236,6 @@ function update_file_line_breakpoint(fileid,filename) {
         }, "json");
 }
 
-function rebuild_statck_info(data) {
-    $('#stack_datagrid').datagrid('loadData',[]);
-    
-    $('#stack_datagrid').datagrid({
-        onClickRow: function(index,rowData){
-            openFiles(rowData["filename_last"],rowData["filename"],rowData["file_id"]);
-        }
-    });
-    
-    $.each(data,function(n,value) {
-        $('#stack_datagrid').datagrid('insertRow',{
-            index: parseInt(value.frame),	// index start with 0
-            row: {
-                frame: value.frame,
-                filename: value.filename,
-                lineno: value.lineno,
-                function: value.function,
-                file_id: value.file_id,
-                filename_last:value.filename_last
-            }
-        });
-    });
-}
-
 function update_cur_selected_tab_info() {
     var tab = $('#botton_tab').tabs('getSelected');
     switch (tab.panel('options').title) {
@@ -350,7 +251,7 @@ function update_cur_selected_tab_info() {
         case 'Files Watch':{
                 get_files_watch();
             }break;   
-        case 'Files Watch':{
+        case 'Variables Watch':{
                 get_variables_watch();
             }break; 
     }

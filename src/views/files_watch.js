@@ -21,16 +21,16 @@ $(document).ready(function(){
 
 function add_files_watch_dlg_open() {
     $('#add_files_watch_dlg').dialog('open').dialog('center').dialog('setTitle','Add a File Watch');
-    $('#add_files_watch_add_dlg_fm').form('clear');
+    $('#add_files_watch_add_dlg_file_name').textbox('clear');
 }
 
 function add_files_watch_dlg_close() {
-    $('#add_files_watch_add_dlg_fm').form('clear');
+    $('#add_files_watch_add_dlg_file_name').textbox('clear');
     $('#add_files_watch_dlg').dialog('open').dialog('close');
 }
 
 function add_file_watch_request() {
-    var path = $('#add_files_watch_add_dlg_fm div .textbox .textbox-value').val();
+    var path = $('#add_files_watch_add_dlg_file_name').textbox("getText");
     var path_en = base64_encode(path);
     $.get("files_watch", {"action":"add", "param":path_en},
         function(data){
@@ -110,8 +110,8 @@ function get_file_last_content_by_index(tab_index) {
 }
 
 function remove_file_watch(tab_index) {
-    var file_id = $("#files_watch_tabs").tabs('getTab',tab_index).panel('options').id; //base64encode
-    $.get("files_watch", {"action":"remove", "param":file_id},
+    var file_path = $("#files_watch_tabs").tabs('getTab',tab_index).panel('options').path; //base64encode
+    $.get("files_watch", {"action":"remove", "param":file_path},
       function(data){
             console.log(data);
             if (data.ret == 1) {

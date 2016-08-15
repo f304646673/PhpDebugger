@@ -13,7 +13,8 @@ class ide_config:
     def add_watch_variable(self,name):
         return self._add_data("watch_variables",name)
     
-    def remove_watch_variable(self,path):
+    def remove_watch_variable(self,name):
+        print name
         return self._remove_data("watch_variables",name)
         
     def get_watch_variable(self):
@@ -28,14 +29,14 @@ class ide_config:
     def get_watch_file(self):
         return self._get_data("watch_files")
     
-    def add_floder(self,path):
-        return self._add_data("floders",path)
+    def add_folder(self,path):
+        return self._add_data("folders",path)
         
-    def remove_floder(self,path):
-        return self._remove_data("floders",path)
+    def remove_folder(self,path):
+        return self._remove_data("folders",path)
 
-    def get_floders(self):
-        return self._get_data("floders")
+    def get_folders(self):
+        return self._get_data("folders")
     
     def _add_data(self,type,data):
         datas = self._get_data(type)
@@ -86,7 +87,7 @@ class ide_config:
 if __name__ == "__main__":
     ide = ide_config()
     
-    ide.remove_floder(6)
-    print ide.get_floders()
+    ide.remove_folder(6)
+    print ide.get_folders()
     #return
-    #ide.set_floders([1,2,3,4])
+    #ide.set_folders([1,2,3,4])

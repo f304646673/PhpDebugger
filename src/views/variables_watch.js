@@ -4,18 +4,33 @@
  * and open the template in the editor.
  */
 
+$(document).ready(function(){
+    $("#variables_watch_tabs").tabs({
+        onBeforeClose:function(title,index) {
+            return remove_variable_watch(index);
+        }
+    });
+    
+    $("#variables_watch_tabs").tabs({
+        onSelect:function(title,index) {
+            //get_variable_last_content_by_index(index);
+        }
+    });
+    
+});
+
 function add_variables_watch_dlg_open() {
-    $('#add_variables_watch_dlg').dialog('open').dialog('center').dialog('setTitle','Add a Variable Watch');
-    $('#add_variables_watch_add_dlg_fm').form('clear');  
+    $('#add_variables_watch_dlg').dialog('open').dialog('center').dialog('setTitle','Add Variable Watch');
+    $('#add_variables_watch_add_dlg_variable_name').textbox('clear');  
 }
 
 function add_variables_watch_dlg_close() {
-    $('#add_variables_watch_add_dlg_fm').form('clear');
+    $('#add_variables_watch_add_dlg_variable_name').textbox('clear');
     $('#add_variables_watch_dlg').dialog('close');
 }
 
 function add_variable_watch_request() {
-    var variable_name_de = $('#add_variables_watch_add_dlg_fm div .textbox .textbox-value').val();
+    var variable_name_de = $('#add_variables_watch_add_dlg_variable_name').textbox("getText");
     var variable_name_en = base64_encode(variable_name_de);
     $.get("variables_watch", {"action":"add", "param":variable_name_en},
         function(data){
@@ -134,8 +149,9 @@ function get_variable_last_content_by_index(tab_index) {
 }
 
 function remove_variable_watch(tab_index) {
-    var variable_id = $("#variables_watch_tabs").tabs('getTab',tab_index).panel('options').id; //base64encode
-    $.get("variables_watch", {"action":"remove", "param":variable_id},
+    var variable_name_de = $("#variables_watch_tabs").tabs('getTab',tab_index).panel('options').title; //base64encode
+    var variable_name_en = base64_encode(variable_name_de);
+    $.get("variables_watch", {"action":"remove", "param":variable_name_en},
       function(data){
             console.log(data);
             if (data.ret == 1) {

@@ -7,8 +7,10 @@
         
         <script src="/files/third/jquery3_1/jquery-3.1.0.js" type="text/javascript"></script>
         
+        <script type="text/javascript" src="/files/status.js"></script>
         <script type="text/javascript" src="/files/console.js"></script>
         <script type="text/javascript" src="/files/variables.js"></script>
+        <script type="text/javascript" src="/files/call_stack.js"></script>
         <script type="text/javascript" src="/files/breakpoint.js"></script>
         <script type="text/javascript" src="/files/files_watch.js"></script>
         <script type="text/javascript" src="/files/variables_watch.js"></script>
@@ -117,15 +119,15 @@
                         </div>
                     </div>
                 </div>
-                <div  title="Floders" style="width:15%;min-width:200px" data-options="region:'west',iconCls:'icon-floder',split:true,tools:[{
-                            iconCls:'icon-reload',
-                            handler:function(){floder_reload();}
+                <div  title="Folders" style="width:15%;min-width:200px" data-options="region:'west',iconCls:'icon-folder',split:true,tools:[{
+                            iconCls:'icon-folder-explore',
+                            handler:function(){folder_reload();}
                         },{
-                            iconCls:'icon-add',
-                            handler:function(){floder_add_dlg_open();}
+                            iconCls:'icon-folder-add',
+                            handler:function(){add_folder_dlg_open();}
                         },{
-                            iconCls:'icon-remove',
-                            handler:function(){floder_remove();}
+                            iconCls:'icon-folder-del',
+                            handler:function(){folder_remove();}
                         }]">
                     <ul id="files_tree" class="easyui-tree" data-options="animate:true,dnd:true,lines:true">
                     </ul>
@@ -138,57 +140,43 @@
         </div>
         
         <div id="botton_variables_tab_tools">
-            <a href="javascript:void(0)" class="icon-mini-refresh" onclick="getVariables()"></a>
+            <a href="javascript:void(0)" class="icon-mini-refresh" onclick="get_variables_list();"></a>
         </div>
         
         <div id="botton_stack_tab_tools">
-            <a href="javascript:void(0)" class="icon-mini-refresh" onclick="getStack()"></a>
+            <a href="javascript:void(0)" class="icon-mini-refresh" onclick="get_stack_list();"></a>
         </div>
         
         <div id="botton_breakpoint_tab_tools">
-            <a href="javascript:void(0)" class="icon-mini-add" onclick="breakpoint_add_dialog_open();"></a>
-            <a href="javascript:void(0)" class="icon-mini-refresh" onclick="getBreakpoint()"></a>
+            <a href="javascript:void(0)" class="icon-mini-add" onclick="add_breakpoint_dlg_open();"></a>
+            <a href="javascript:void(0)" class="icon-mini-refresh" onclick="get_breakpoint_list()"></a>
         </div>
         
         <div id="botton_files_watch_tab_tools">
             <a href="javascript:void(0)" class="icon-mini-add" onclick="add_files_watch_dlg_open();"></a>
-            <a href="javascript:void(0)" class="icon-mini-refresh" onclick="getFilesWatch()"></a>
+            <a href="javascript:void(0)" class="icon-mini-refresh" onclick="get_files_watch()"></a>
         </div>
                  
         <div id="botton_variables_watch_tab_tools">
             <a href="javascript:void(0)" class="icon-mini-add" onclick="add_variables_watch_dlg_open();"></a>
-            <a href="javascript:void(0)" class="icon-mini-refresh" onclick="getVariablesWatch()"></a>
+            <a href="javascript:void(0)" class="icon-mini-refresh" onclick="get_variables_watch()"></a>
         </div>                        
-                        
-        <div id="floders_tools">
-            <a href="#" class="icon-reload" onclick="floder_reload()"></a>
-            <a href="#" class="icon-add" onclick="floder_add()"></a>
-            <a href="#" class="icon-remove" onclick="floder_remove()"></a>
-        </div>
         
-        <div id="add_floder_dlg" class="easyui-dialog" style="width:400px;height:150px;padding:10px 20px"
-            closed="true" buttons="#add_floder_dlg_buttons">
-            <form id="add_floder_dlg_fm" url="files_tree" method="get" novalidate>
-                <div class="fitem">
-                    <label>Floder Path:</label>
-                    <input name="add_floder_dlg_floder_path" class="easyui-textbox" style="width:350px;" required="true">
-                </div>
-            </form>
+        <div id="add_folder_dlg" class="easyui-dialog" style="width:400px;height:150px;padding:10px 20px"
+            closed="true" buttons="#add_folder_dlg_buttons" data-options="iconCls:'icon-folder-add',resizable:false,modal:true">
+            <label>Folder Path:</label>
+            <input name="add_folder_dlg_folder_path" class="easyui-textbox" style="width:350px;" required="true">
         </div>
                         
-        <div id="add_floder_dlg_buttons">
-            <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="floder_add_request();" style="width:90px">Save</a>
-            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="floder_add_dlg_close();" style="width:90px">Cancel</a>
+        <div id="add_folder_dlg_buttons">
+            <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="folder_add_request();" style="width:90px">Save</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="add_folder_dlg_close();" style="width:90px">Cancel</a>
         </div>                        
         
         <div id="add_files_watch_dlg" class="easyui-dialog" style="width:400px;height:150px;padding:10px 20px"
-            closed="true" buttons="#add_files_watch_dlg_buttons">
-            <form id="add_files_watch_add_dlg_fm" url="add_file_watch" method="get" novalidate>
-                <div class="fitem">
-                    <label>Files Path:</label>
-                    <input name="add_file_watch_path" class="easyui-textbox" style="width:350px;" required="true">
-                </div>
-            </form>          
+            closed="true" buttons="#add_files_watch_dlg_buttons" data-options="iconCls:'icon-add'">
+            <label>Files Path:</label>
+            <input id="add_files_watch_add_dlg_file_name" type="text" class="easyui-textbox" style="width:340px;">    
         </div>
                         
         <div id="add_files_watch_dlg_buttons">
@@ -197,13 +185,9 @@
         </div>    
                         
         <div id="add_variables_watch_dlg" class="easyui-dialog" style="width:400px;height:150px;padding:10px 20px"
-            closed="true" buttons="#add_variables_watch_dlg_buttons">
-            <form id="add_variables_watch_add_dlg_fm" url="add_variable_watch" method="get" novalidate>
-                <div class="fitem">
-                    <label>Variable Name:</label>
-                    <input name="add_variable_watch_name" class="easyui-textbox" style="width:350px;" required="true">
-                </div>
-            </form>          
+            closed="true" buttons="#add_variables_watch_dlg_buttons" data-options="iconCls:'icon-variables-watch-add'">
+            <label>Variable Name:</label>
+            <input id="add_variables_watch_add_dlg_variable_name" type="text" class="easyui-textbox" style="width:340px;">        
         </div>
                           
         <div id="add_variables_watch_dlg_buttons">
@@ -212,26 +196,18 @@
         </div>    
         
         <div id="tools_memu_content" style="width:150px;">
-            <div data-options="iconCls:'icon-add'" onclick="breakpoint_add_dialog_open();">Add Breakpoint</div>
-            <div data-options="iconCls:'icon-redo'">Redo</div>
+            <div data-options="iconCls:'icon-breakpoint-add'" onclick="add_breakpoint_dlg_open();">Add Breakpoint</div>
             <div class="menu-sep"></div>
-            <div>Cut</div>
-            <div>Copy</div>
-            <div>Paste</div>
+            <div data-options="iconCls:'icon-run'" onclick="run();">Run</div>
+            <div data-options="iconCls:'icon-step-over'" onclick="step_over();">Step Over</div>
+            <div data-options="iconCls:'icon-step-in'" onclick="step_in();">Step In</div>
+            <div data-options="iconCls:'icon-step-out'" onclick="step_out();">Step Out</div>
             <div class="menu-sep"></div>
-            <div>
-                <span>Toolbar</span>
-                <div>
-                    <div>Address</div>
-                    <div>Link</div>
-                    <div>Navigation Toolbar</div>
-                    <div>Bookmark Toolbar</div>
-                    <div class="menu-sep"></div>
-                    <div>New Toolbar...</div>
-                </div>
-            </div>
-            <div data-options="iconCls:'icon-remove'">Delete</div>
-            <div>Select All</div>
+            <div data-options="iconCls:'icon-add'" onclick="add_files_watch_dlg_open();">Add File Watch</div>
+            <div class="menu-sep"></div>
+            <div data-options="iconCls:'icon-variables-watch-add'" onclick="add_variables_watch_dlg_open();">Add Variable Watch</div>
+            <div class="menu-sep"></div>
+            <div data-options="iconCls:'icon-folder-add'" onclick="add_folder_dlg_open();">Add Folder</div>
         </div>
                         
         <div id="help_memu_content" style="width:100px;">
@@ -243,8 +219,8 @@
             <img src="/files/themes/img/about.png" style="width:437px;height:131px">
             <p style="font-size:14px;color:#444;">https://github.com/f304646673/PhpDebugger.git</p>
         </div>
-        
-        <div id="console_dlg" class="easyui-dialog" title="Debug Console" style="width:900px;height:800px;padding:10px" data-options="resizable:true" closed="true">
+                        
+        <div id="console_dlg" class="easyui-dialog" title="Debug Console" style="width:900px;height:800px;padding:10px" data-options="iconCls:'icon-search',resizable:true,modal:true" closed="true">
             <div id="console_dlg_div" style="width:100%;height:100%;">
                 <div data-options="region:'center'" style="width:100%;">
                     <div style="margin:0px 0;width:100%;height:100%">
@@ -259,8 +235,9 @@
             </div>
         </div>           
 
-        <div id="variables_treegrid_contextmenu" class="easyui-menu" style="width:120px;">
+        <div id="variables_treegrid_contextmenu" class="easyui-menu" style="width:160px;">
             <div onclick="show_variable_in_dialog_from_menucontent()" data-options="iconCls:'icon-search'">Show</div>
+            <div onclick="add_variable_watch_in_dialog_from_menucontent()" data-options="iconCls:'icon-variables-watch-add'">Add Variable Watch</div>
             <div class="menu-sep"></div>
             <div onclick="variables_treegrid_contextmenu_collapse()">Collapse</div>
             <div onclick="variables_treegrid_contextmenu_expand()">Expand</div>
@@ -268,12 +245,12 @@
                         
         <div id="ft" style="padding:5px;">Footer Content.</div>
         
-        <div id="variables_show" class="easyui-dialog" title="Variable" data-options="iconCls:'icon-search'" style="width:800px;height:600px;padding:10px" closed="true">
+        <div id="variables_show" class="easyui-dialog" title="Variable" data-options="iconCls:'icon-search',resizable:false,modal:true" style="width:800px;height:600px;padding:10px" closed="true">
             <pre id="variables_show_json-renderer"></pre>
         </div>
         
         <div id="breakpoint_add_dialog" class="easyui-dialog" title="Add Breakpoint" style="width:600px;height:256px;" closed="true" 
-                data-options="iconCls:'icon-add',resizable:false,modal:true">
+                data-options="iconCls:'icon-breakpoint-add',resizable:false,modal:true">
             <div class="easyui-layout" style="width:100%;height:100%;" border="false">
                 <div data-options="region:'north',split:false" style="height:180px;width:100%;" border="false">
                     <div id="breakpoint_add_dialog_tabs" class="easyui-tabs" style="width:100%;height:100%;" border="false">

@@ -100,22 +100,22 @@ def request_do_post():
 @route('/files_tree', method='get')
 def request_files_tree():
     action = request.query.action
-    floder_en = request.query.param
-    floder_de = base64.b64decode(floder_en);
+    folder_en = request.query.param
+    folder_de = base64.b64decode(folder_en);
     ide_cfg = ide_config()
-    print floder_de, action
+    print folder_de, action
     
     if "build" == action:
-        floders = ide_cfg.get_floders()
-        files_tree.set_root_path(floders)
+        folders = ide_cfg.get_folders()
+        files_tree.set_root_path(folders)
         data = files_tree.build()
         return json.dumps(data)
     elif "add" == action:
-        floders = ide_cfg.add_floder(floder_de)
+        folders = ide_cfg.add_folder(folder_de)
         ret = {"ret":1}
         return json.dumps(ret)
     elif "remove" == action:
-        floders = ide_cfg.remove_floder(floder_de)
+        folders = ide_cfg.remove_folder(folder_de)
         ret = {"ret":1}
         return json.dumps(ret)
     

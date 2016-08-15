@@ -65,13 +65,3 @@ function run() {
             update_cur_selected_tab_info();
         }, "json");
 }
-
-function get_stack_list() {
-    $.post("do", {"action":"stack_get", "param":""},
-        function(data){
-            if (data.ret == 1) {
-                rebuild_statck_info(data.data);
-            }
-            console.log(data);
-        }, "json");
-}
