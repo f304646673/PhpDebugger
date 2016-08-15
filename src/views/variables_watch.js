@@ -29,8 +29,12 @@ function add_variables_watch_dlg_close() {
     $('#add_variables_watch_dlg').dialog('close');
 }
 
-function add_variable_watch_request() {
+function add_variable_watch_by_dialg() {
     var variable_name_de = $('#add_variables_watch_add_dlg_variable_name').textbox("getText");
+    add_variable_watch_request(variable_name_de);
+}
+
+function add_variable_watch_request(variable_name_de) {
     var variable_name_en = base64_encode(variable_name_de);
     $.get("variables_watch", {"action":"add", "param":variable_name_en},
         function(data){
@@ -155,8 +159,12 @@ function remove_variable_watch(tab_index) {
       function(data){
             console.log(data);
             if (data.ret == 1) {
-                
             }
             });
     return true;
+}
+
+function add_variable_watch_by_menu(){
+    add_variables_watch_dlg_open();
+    $("#add_variables_watch_add_dlg_variable_name").textbox("setText", selected_text);
 }

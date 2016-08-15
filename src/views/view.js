@@ -10,28 +10,6 @@ $(document).ready(function(){
     setTimeout(function () { 
         folder_reload();
     }, 100);
-
-
-    $('#breakpoint_add_line_form').form('submit', {
-        url:"do",
-        onSubmit: function(param){
-
-        }
-    });
-
-    $('#breakpoint_add_call_form').form('submit', {
-        url:"do",
-        onSubmit: function(param){
-
-        }
-    });
-
-    $('#breakpoint_add_return_form').form('submit', {
-        url:"do",
-        onSubmit: function(param){
-
-        }
-    });
     
     $('#botton_tab').tabs({
         onSelect: function(title,index){
@@ -68,8 +46,13 @@ $(document).ready(function(){
     });
 });
 
+var rigth_click_line_no = 0;
+var rigth_click_file_path = "";
+
 function modify_highlight(id) {
     var $numbering;
+    
+    
     //var ul_id = id + "_pre-numbering";
     $('#'+id).each(function(){
         var lines = $(this).text().split('\n').length;
@@ -82,6 +65,24 @@ function modify_highlight(id) {
         }
     });
 
+    $('#'+id).bind('contextmenu', function(e){
+        $('#right_click_src_menu').menu('show', {
+            left: e.pageX,
+            top: e.pageY
+        });
+        return false;
+    });
+    
+    $numbering.on('contextmenu', 'li', function(e){
+        rigth_click_line_no = e.currentTarget.innerHTML;
+        rigth_click_file_path = e.target.parentNode.parentNode.getAttribute("path");
+        $('#right_click_line_menu').menu('show', {
+            left: e.pageX,
+            top: e.pageY
+        });
+        return false;
+    });
+    
     $numbering.on('click', 'li', function(e) {
         var $target = $(e.currentTarget),
             isactive = $target.hasClass('active'),
@@ -116,7 +117,7 @@ function update_files(id,path) {
     $.post("getfile", {"path":path},
         function(data){
             $("#" + id).empty();                                            // 删除原来代码
-            $("<code class='" + data.type + " hljs' style='witdh:100%;height:100%;'><code/>").appendTo($("#" + id));      // 新增代码块
+            $("<code class='" + data.type + " hljs'><code/>").appendTo($("#" + id));      // 新增代码块
             var context = base64_decode(data.data);
 
             $("#" + id + " ."+ data.type).html(highlight_code(data.type, context).value);     // 设置代码块内容
@@ -255,4 +256,19 @@ function update_cur_selected_tab_info() {
                 get_variables_watch();
             }break; 
     }
+}
+
+function get_selected_text(){ 
+    //适用于IE 
+    if (document.selection && document.selection.createRange){ 
+        return document.selection.createRange().text; 
+        //适用于其他浏览器
+    } else if (window.getSelection){ 
+        return window.getSelection().toString(); 
+    } 
+}
+
+var selected_text = "";
+function save_selected_text() {
+    selected_text = get_selected_text();
 }

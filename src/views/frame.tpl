@@ -191,7 +191,7 @@
         </div>
                           
         <div id="add_variables_watch_dlg_buttons">
-            <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="add_variable_watch_request();" style="width:90px">Save</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="add_variable_watch_by_dialg();" style="width:90px">Save</a>
             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="add_variables_watch_dlg_close();" style="width:90px">Cancel</a>
         </div>    
         
@@ -257,14 +257,14 @@
                         <div title="Line" id ="breakpoint_add_dialog_tabs_line" style="padding:20px;display:none;">
                             <table style="width:100%;">
                                 <tr>
-                                    <td>Filepath</td>
+                                    <td style="width:20%;">Filepath:</td>
                                     <td>
                                         <input id="breakpoint_add_dialog_line_filename" class="easyui-textbox" name="path" style="width:100%;height:50px;" data-options="multiline:true,required:true"/>
                                     </td>
                                 </tr>
 
                                 <tr>
-                                    <td>line_no</td>
+                                    <td style="width:20%;">Line_no:</td>
                                     <td>
                                         <input id="breakpoint_add_dialog_line_lineno" class="easyui-textbox" name="lineno" style="width:100%" data-options="required:true"/>
                                     </td>
@@ -274,7 +274,7 @@
                         <div title="Call" id ="breakpoint_add_dialog_tabs_call" style="padding:20px;display:none;">
                             <table style="width:100%;">
                                 <tr>
-                                    <td>Function Name</td>
+                                    <td style="width:25%;">Function Name:</td>
                                     <td>
                                         <input id="breakpoint_add_dialog_call_function" class="easyui-textbox" name="function" style="width:100%" data-options="required:true"/>
                                     </td>
@@ -284,7 +284,7 @@
                         <div title="Return" id ="breakpoint_add_dialog_tabs_return" style="padding:20px;display:none;">
                             <table style="width:100%;">
                                 <tr>
-                                    <td>Function Name</td>
+                                    <td style="width:25%;">Function Name:</td>
                                     <td>
                                         <input id="breakpoint_add_dialog_return_function" class="easyui-textbox" name="function" style="width:100%" data-options="required:true"/>
                                     </td>
@@ -294,7 +294,7 @@
                         <div title="Exception"  id ="breakpoint_add_dialog_tabs_exception" style="padding:20px;display:none;">
                             <table style="width:100%;">
                                 <tr>
-                                    <td>Exception Name</td>
+                                    <td style="width:25%;">Exception Name:</td>
                                     <td>
                                         <input id="breakpoint_add_dialog_exception_exception_name" class="easyui-textbox" name="exception" style="width:100%" data-options="required:true"/>
                                     </td>
@@ -304,19 +304,19 @@
                         <div title="Condition"  id ="breakpoint_add_dialog_tabs_condition"  style="padding:20px;display:none;">
                             <table style="width:100%;">
                                 <tr>
-                                    <td>Filepath</td>
+                                    <td style="width:20%;">Filepath:</td>
                                     <td>
                                         <input id="breakpoint_add_dialog_condition_filename" class="easyui-textbox" name="path" style="width:100%;height:50px;" data-options="multiline:true,required:true"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>line_no</td>
+                                    <td style="width:20%;">Line_no:</td>
                                     <td>
                                         <input id="breakpoint_add_dialog_condition_lineno" class="easyui-textbox" name="lineno" style="width:100%" data-options="required:true"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>expression</td>
+                                    <td style="width:20%;">Expression:</td>
                                     <td>
                                         <input id="breakpoint_add_dialog_condition_expression" class="easyui-textbox" name="expression" style="width:100%" data-options="required:true"/>
                                     </td>
@@ -331,6 +331,19 @@
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <div id="right_click_line_menu" class="easyui-menu" style="width:200px;">
+            <div id="right_click_line_menu_add_line_breakpoint" onclick="add_line_breakpoint_by_menu();">Add Line Breakpoint</div>
+            <div id="right_click_line_menu_add_conditional_breakpoint" onclick="add_conditional_breakpoint_by_menu();">Add Condition Breakpoint</div>
+        </div>
+        
+                
+        <div id="right_click_src_menu" class="easyui-menu" style="width:280px;" data-options="onShow:save_selected_text">
+            <div id="right_click_src_menu_add_variable_watch" onclick="add_variable_watch_by_menu();">Add Variable Watch</div>
+            <div id="right_click_src_menu_add_exception_breakpoint" onclick="add_breakpoint_exception_by_menu();">Add Exception Breakpoint</div>
+            <div id="right_click_src_menu_add_function_call_breakpoint" onclick="add_breakpoint_call_by_menu();">Add Function Call Breakpoint</div>
+            <div id="right_click_src_menu_add_function_return_breakpoint" onclick="add_breakpoint_return_by_menu();">Add Function Return Breakpoint</div>
         </div>
         
     </body>

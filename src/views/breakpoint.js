@@ -56,6 +56,10 @@ function add_breakpoint_line_by_dialog() {
         return;
     }
 
+    add_breakpoint_line(filename, lineno);
+}
+
+function add_breakpoint_line(filename, lineno) {
     var param = '{"filename":"' + base64_encode(filename) + '", "lineno":"' + lineno + '", "type":"line"}';
     var param_en = base64_encode(param);
     $.post("do", {"action":"add_breakpoint", "param":param_en},
@@ -73,7 +77,10 @@ function add_breakpoint_call_by_dialog() {
         alert("function is empty!")
         return;
     }
+    add_breakpoint_call(function_name);
+}
 
+function add_breakpoint_call(function_name) {
     var param = '{"function":"' + function_name + '", "type":"call"}';
     var param_en = base64_encode(param);
     $.post("do", {"action":"add_breakpoint", "param":param_en},
@@ -83,6 +90,7 @@ function add_breakpoint_call_by_dialog() {
             }
             console.log(data);
     }, "json");
+    
 }
 
 function add_breakpoint_return_by_dialog() {
@@ -91,7 +99,10 @@ function add_breakpoint_return_by_dialog() {
         alert("function is empty!");
         return;
     }
+    add_breakpoint_return(function_name);
+}
 
+function add_breakpoint_return(function_name) {
     var param = '{"function":"' + function_name + '", "type":"return"}';
     var param_en = base64_encode(param);
     $.post("do", {"action":"add_breakpoint", "param":param_en},
@@ -109,7 +120,10 @@ function add_breakpoint_exception_by_dialog() {
         alert("exception is empty!");
         return;
     }
+    add_breakpoint_exception(exception_name);
+}
 
+function add_breakpoint_exception(exception_name) {
     var param = '{"exception":"' + exception_name + '", "type":"exception"}';
     var param_en = base64_encode(param);
     $.post("do", {"action":"add_breakpoint", "param":param_en},
@@ -119,6 +133,7 @@ function add_breakpoint_exception_by_dialog() {
             }
             console.log(data);
     }, "json");
+    
 }
 
 function add_breakpoint_condition_by_dialog() {
@@ -129,9 +144,11 @@ function add_breakpoint_condition_by_dialog() {
         alert("filename\lineno\expression is empty!");
         return;
     }
-    
-    var expression_en = base64_encode(expression);
-    var param = '{"filename":"' + base64_encode(filename) + '", "lineno":"' + lineno + '", "expression":"' + expression_en +  '", "type":"conditional"}';
+    add_breakpoint_condition(filename, lineno, expression);
+}
+
+function add_breakpoint_condition(filename, lineno, expression) {
+    var param = '{"filename":"' + base64_encode(filename) + '", "lineno":"' + lineno + '", "expression":"' + base64_encode(expression) +  '", "type":"conditional"}';
     var param_en = base64_encode(param);
     $.post("do", {"action":"add_breakpoint", "param":param_en},
         function(data){
@@ -181,4 +198,36 @@ function remove_line_breakpoint(path, lineno) {
           //alert(data.name);
           console.log(data);
         }, "json");
+}
+
+function add_breakpoint_call_by_menu() {
+    add_breakpoint_dlg_open();
+    $('#breakpoint_add_dialog_tabs').tabs('select', 'Call');
+    $("#breakpoint_add_dialog_call_function").textbox("setText", selected_text);
+}
+
+function add_breakpoint_return_by_menu() {
+    add_breakpoint_dlg_open();
+    $('#breakpoint_add_dialog_tabs').tabs('select', 'Return');
+    $("#breakpoint_add_dialog_return_function").textbox("setText", selected_text);
+}
+
+function add_breakpoint_exception_by_menu() {
+    add_breakpoint_dlg_open();
+    $('#breakpoint_add_dialog_tabs').tabs('select', 'Exception');
+    $("#breakpoint_add_dialog_exception_exception_name").textbox("setText", selected_text);
+}
+
+function add_line_breakpoint_by_menu() {
+    add_breakpoint_dlg_open();
+    $('#breakpoint_add_dialog_tabs').tabs('select', 'Line');
+    $("#breakpoint_add_dialog_line_filename").textbox("setText", base64_decode(rigth_click_file_path));
+    $("#breakpoint_add_dialog_line_lineno").textbox("setText", rigth_click_line_no);
+}
+
+function add_conditional_breakpoint_by_menu() {
+    add_breakpoint_dlg_open();
+    $('#breakpoint_add_dialog_tabs').tabs('select', 'Condition');
+    $("#breakpoint_add_dialog_condition_filename").textbox("setText", base64_decode(rigth_click_file_path));
+    $("#breakpoint_add_dialog_condition_lineno").textbox("setText", rigth_click_line_no);
 }
