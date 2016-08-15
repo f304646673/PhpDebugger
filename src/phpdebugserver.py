@@ -16,6 +16,7 @@ from files_tree_build import files_tree_build_json
 from ide_config import ide_config
 from debugger import debugger
 from files_watch import files_watch
+from variables_tree_build import variables_tree_build
 
 debugger = debugger()
 #sub = pydbgpd_helper()
@@ -195,6 +196,21 @@ def getFile():
     data = base64.b64encode(text)
     ret_info = {"ret":1, "type":type, "data":data}
     return json.dumps(ret_info)
+    
+@route('/variables', method='POST')
+def request_variables():
+    global debugger
+    (ret,type) = debugger.do("get_variables", "");
+    if type == "json":
+        if ret["ret"] == 1:
+            vrb = variables_tree_build()
+            variables_tree_data = vrb.build(ret["data"])
+            ret_new = {"ret":1, "data": variables_tree_data}
+            return json.dumps(ret_new)
+        else:
+            return json.dumps({"ret":0});
+    else:
+        return template('index', **request.forms)
     
 @route('/hello')
 def hello():

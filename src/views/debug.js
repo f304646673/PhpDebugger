@@ -143,6 +143,10 @@ function add_breakpoint() {
         add_breakpoint_return_by_dialog();
     } else if (tab_id == "breakpoint_add_dialog_tabs_call") {
         add_breakpoint_call_by_dialog();
+    } else if (tab_id == "breakpoint_add_dialog_tabs_exception") {
+        add_breakpoint_exception_by_dialog();
+    } else if (tab_id == "breakpoint_add_dialog_tabs_condition") {
+        add_breakpoint_condition_by_dialog();
     }
 }
 
@@ -199,4 +203,43 @@ function add_breakpoint_return_by_dialog() {
             }
             console.log(data);
     }, "json");
+}
+
+function add_breakpoint_exception_by_dialog() {
+    var exception_name = $("#breakpoint_add_dialog_exception_exception_name").textbox("getText");
+    if (0 == exception_name.length) {
+        alert("exception is empty!");
+        return;
+    }
+
+    var param = '{"exception":"' + exception_name + '", "type":"exception"}';
+    var param_en = base64_encode(param);
+    $.post("do", {"action":"add_breakpoint", "param":param_en},
+        function(data){
+            if (data.ret == 1) {
+                $('#breakpoint_add_dialog').dialog('close');
+            }
+            console.log(data);
+    }, "json");
+}
+
+function add_breakpoint_condition_by_dialog() {
+    var filename = $("#breakpoint_add_dialog_condition_filename").textbox("getText");
+    var lineno = $("#breakpoint_add_dialog_condition_lineno").textbox("getText");
+    var expression = $("#breakpoint_add_dialog_condition_expression").textbox("getText");
+    if (0 == filename.length || 0 == lineno.length || 0 == expression.length) {
+        alert("filename\lineno\expression is empty!");
+        return;
+    }
+    
+    var expression_en = base64_encode(expression);
+    var param = '{"filename":"' + base64_encode(filename) + '", "lineno":"' + lineno + '", "expression":"' + expression_en +  '", "type":"conditional"}';
+    var param_en = base64_encode(param);
+    $.post("do", {"action":"add_breakpoint", "param":param_en},
+        function(data){
+            if (data.ret == 1) {
+                $('#breakpoint_add_dialog').dialog('close');
+            }
+            console.log(data);
+    }, "json"); 
 }

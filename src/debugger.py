@@ -8,12 +8,7 @@ import base64
 import md5
 from threading import Thread
 from pydbgpd_helper import pydbgpd_helper
-
-class debugger_exception(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return repr(self.value)
+from debugger_exception import debugger_exception
 
 class debugger:
     
@@ -22,13 +17,15 @@ class debugger:
     _status = -1                 #-1 Uninit 0 Init 1 Listen 2 debug
     _debug_thread = None
     _debug_stop_signal = False
+    _pre_variables = {}
+    _cur_variables = {}
     
     _breakpoint_type_keys = {
         "line" : ["filename","lineno","type"],
         "call" : ["function","type"],
         "return" : ["function","type"],
         "exception" : ["exception","type"],
-        "conditional" : ["conditional","type"],
+        "conditional" : ["filename","lineno","expression","type"],
         "watch" : [],
     }
         
@@ -63,6 +60,7 @@ class debugger:
                     "get_file_line_breakpoint_lineno":[self.get_file_line_breakpoint_lineno, "json", True],
                     "start_debug":[self.start_debug, "json", False],
                     "stop_debug":[self.stop_debug, "json", False],
+                    "get_variable_watch":[self.get_variable_watch, "json", True],
                     }
                     
         if action not in actions.keys():
@@ -275,17 +273,53 @@ class debugger:
         return self._debugger_helper.do("get_cur_stack_info", param)
         
     def step_over(self,param):
-        return self._debugger_helper.do("step_over", param)
+        self._pre_variables = self.get_variables("")
+        ret = self._debugger_helper.do("step_over", param)
+        self._cur_variables = self.get_variables("")
+        return ret
     
     def step_in(self,param):
-       return self._debugger_helper.do("step_in", param)   
+        self._pre_variables = self.get_variables("")
+        ret = self._debugger_helper.do("step_in", param)
+        self._cur_variables = self.get_variables("")
+        return ret
 
     def step_out(self,param):
-       return self._debugger_helper.do("step_out", param)
+        self._pre_variables = self.get_variables("")
+        ret = self._debugger_helper.do("step_out", param)
+        self._cur_variables = self.get_variables("")
+        return ret
    
     def run(self,param):
-       return self._debugger_helper.do("run", param)
+        self._pre_variables = self.get_variables("")
+        ret = self._debugger_helper.do("run", param)
+        self._cur_variables = self.get_variables("")
+        return ret
     
+    def get_variable_watch(self,param):
+        param_de = base64.b64decode(param)
+        pre_data = self._search_variable(self._pre_variables, param_de)
+        cur_data = self._search_variable(self._cur_variables, param_de)
+        m1 = md5.new()   
+        m1.update(param_de)
+        id = m1.hexdigest()
+        new_data = {"pre":pre_data,"cur":cur_data}
+        return {"ret":1, "id":id, "name":param_de, "data":new_data}
+    
+    def _search_variable(self,data,name):
+        print data
+        if "ret" not in data.keys():
+            return {"type":'uninitialized', "value":"",'name':name}
+        if "data" not in data.keys():
+            return {"type":'uninitialized', "value":"",'name':name}
+        if data["ret"] == 0:
+            return {"type":'uninitialized', "value":"",'name':name}
+        for (itemk,itemv) in data["data"].items():
+            for (itemkk,itemvv) in itemv.items():
+                for item in itemvv:
+                    if item["name"] == name:
+                        return item
+
     def stack_get(self,param):
         return self._debugger_helper.do("stack_get", param)
     

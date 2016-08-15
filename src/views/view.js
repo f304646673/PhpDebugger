@@ -370,7 +370,7 @@ function getVariables() {
     RegisteVariablesContextMenu();
     RegistVariablesDbClick();
     
-    $.post("do", {"action":"get_variables", "param":""},
+    $.post("variables", {"action":"", "param":""},
         function(data){
             if (data.ret == 1) {
                 $('#variables_treegrid').treegrid('loadData', data.data);

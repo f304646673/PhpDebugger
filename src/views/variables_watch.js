@@ -65,25 +65,66 @@ function getVariablesWatch() {
         "json");
 }
 
-function make_variable_watch_textarea_id(id) {
-    return "variable_watch_area_"+id;
+function make_variable_watch_content_id(id) {
+    return "variable_watch_show_" + id;
 }
 
-function make_variable_tab_panel_data(tab_id, data) {
-    return "<textarea id='" + make_variable_watch_textarea_id(tab_id) + "' style='width:100%;height:100%'>" + data + "</textarea>";
+function make_variable_watch_content_pre_id(id) {
+    return make_variable_watch_content_id(id) + "_pre";
+}
+
+function make_variable_watch_content_cur_id(id) {
+    return make_variable_watch_content_id(id) + "_cur";
+}
+
+function update_variable_tab_panel_data(tab_id, data) {
+    update_variable_content_outside(tab_id);
+    update_variable_content_pre_cur(tab_id);
+    
+    //$('#' + make_variable_watch_content_cur_id(tab_id)).emtpy();
+    var options = {
+        collapsed: $('#collapsed').is(':checked'),
+        withQuotes: $('#with-quotes').is(':checked')
+    };
+    
+    $('#' + make_variable_watch_content_cur_id(tab_id)).jsonViewer(data.cur.value, options);
+    $('#' + make_variable_watch_content_pre_id(tab_id)).jsonViewer(data.pre.value, options);
+    
+    return 
+}
+
+function update_variable_content_outside(id) {
+    if ($("#"+make_variable_watch_content_id(id)).length > 0)
+        return;
+    var tab_t = $('#variables_watch_tabs').find('#' + id);
+    var html_text = "<div id='" + make_variable_watch_content_id(id) + "' style='width:100%;height:100%'></div>";
+    $("#variables_watch_tabs").tabs('update',{tab:tab_t, options:{content:html_text}});
+}
+
+function update_variable_content_pre_cur(id) {
+    if ($('#' + make_variable_watch_content_pre_id(id)).length == 0) {
+        var pre = $('<pre/>').attr("id", make_variable_watch_content_pre_id(id));
+        var div = $('<div/>').attr("style","display:inline-block;width:50%;height:100%;");
+        div.append(pre);
+        $("#"+make_variable_watch_content_id(id)).append(div);
+    }
+    if ($('#' + make_variable_watch_content_cur_id(id)).length == 0) {
+        var cur = $('<pre/>').attr("id", make_variable_watch_content_cur_id(id));
+        var div = $('<div/>').attr("style","display:inline-block;width:50%;height:100%;");
+        div.append(cur);
+        $("#"+make_variable_watch_content_id(id)).append(div);
+    }     
 }
 
 function get_variable_last_content(tab_id,variable_name) {
-    $.get("variables_watch", {"action":"get_variable", "param":variable_name},
+    var variable_name_en = base64_encode(variable_name);
+    $.post("do", {"action":"get_variable_watch", "param":variable_name_en},
         function(data){
             console.log(data);
-            var tab_t = $('#variables_watch_tabs').find('#' + tab_id);
-            var html_text = make_variable_tab_panel_data(tab_id,data);
-            $("#variables_watch_tabs").tabs('update',{tab:tab_t, options:{content:html_text}});
-            var area_id = make_variable_watch_textarea_id(tab_id);
-            var scrollTop = $("#" + area_id )[0].scrollHeight;  
-            $("#" + area_id ).scrollTop(scrollTop); 
-        });
+            if (data.ret == 1) {
+                update_variable_tab_panel_data(data.id, data.data)
+            } 
+        }, "json");
 }
 
 function get_variable_last_content_by_index(tab_index) {

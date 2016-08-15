@@ -9,9 +9,8 @@ import json
 import base64
 import math
 from threading import Thread
-
 from pydbgpd_stub import pydbgpd_stub
-from variables_tree_build import variables_tree_build
+from debugger_exception import debugger_exception
 
 class pydbgpd_helper:
     _pydbgpd = None
@@ -22,7 +21,6 @@ class pydbgpd_helper:
         self._stack_get_pattern = re.compile("frame: (\d+) (.+)\((\d+)\) file ([{\w}]+)")
         self._context_get_pattern = re.compile("name: (\$[\d\w_]+) type: (\w+) value: (.*)")
         self._sessions_info_pattern = re.compile("(\d+):<dbgp.server.application instance at 0x(.+)>")
-        self._breakpoint_info_pattern = re.compile("<dbgp.server.breakpoint: id:([\-\d]+) type:(\w+) filename:(.*) lineno:(\-?\d*) function:([\w\d_]*) state:(\w+) exception:([\w\d_]?) expression:([\w\d_]?) temporary:(\d+) hit_count:(\d+) hit_value:([\w\d]+) hit_condition:([\w\d]+)>")      
         
     def _get_status(self):
         if self._pydbgpd.is_session():
@@ -62,7 +60,7 @@ class pydbgpd_helper:
         query = "breakpoint_set -t line -f " +  filename + " -n " + lineno
         #<dbgp.server.breakpoint: id:11900002 type:line filename:file:///var/www/html/index.php lineno:8 function: state:enabled exception: expression: temporary:0 hit_count:0 hit_value:None hit_condition:None>
         data = self._pydbgpd.query(query)
-        pattern = re.compile("<dbgp.server.breakpoint: id:(\d+) type:(\w+) filename:(.+) lineno:(\d*) function:([\w\d_]*) state:(\w+) exception:([\w\d_]*) expression:([\w\d_]*) temporary:(\d+) hit_count:(\d+) hit_value:([\w\d]+) hit_condition:([\w\d]+)>")
+        pattern = re.compile("<dbgp.server.breakpoint: id:(\d+) type:(\w+) filename:(.+) lineno:(\d*) function:([\w\d_]*) state:(\w+) exception:([\w\d_]*) expression:(.*) temporary:(\d+) hit_count:(\d+) hit_value:([\w\d]+) hit_condition:([\w\d]+)>")
         try:
             res = pattern.search(data).groups()
             ret = 1
@@ -173,18 +171,23 @@ class pydbgpd_helper:
     def add_breakpoint(self,breakpointinfo):
         #breakpoint_set_keys = ["type", "filename", "lineno", "function", "state", "exception", "expression", "temporary", "hit_count", "hit_value", "hit_condition"]
         breakpoint_set_type_keys = {
-            "line" : {"filename":" -f ","lineno":" -n "},
-            "call" : {"function":" -m "},
-            "return" : {"function":" -m "},
-            "exception" : {"exception":""},
-            "conditional" : {"conditional":""},
+            "line" : {"filename":"-f","lineno":"-n"},
+            "call" : {"function":"-m"},
+            "return" : {"function":"-m"},
+            "exception" : {"exception":"-x"},
+            "conditional" : {"filename":"-f","lineno":"-n","expression":"-c"},
             "watch" : {},
         }
         
         query = "breakpoint_set -t " + breakpointinfo["type"]
         for (key,value) in breakpoint_set_type_keys[breakpointinfo["type"]].items():
-            query = query + value + breakpointinfo[key]
+            if value == "-c":
+                expression_de = base64.b64decode(breakpointinfo[key])
+                query = query + " " + value + " '" + expression_de + " '"
+            else:
+                query = query + " " + value + " " + breakpointinfo[key]
 
+        print query
         data = self._pydbgpd.query(query)
         iteminfo = self._parse_breakpoint_info(data)
         if not iteminfo:
@@ -244,21 +247,9 @@ class pydbgpd_helper:
     def _parse_breakpoint_info(self, info):
         iteminfo = {}
         try:
-            res = self._breakpoint_info_pattern.search(info).groups()
-            iteminfo["id"] = res[0]
-            iteminfo["type"] = res[1]
-            iteminfo["filename"] = res[2]
-            iteminfo["lineno"] = res[3]
-            iteminfo["function"] = res[4]
-            iteminfo["state"] = res[5]
-            iteminfo["exception"] = res[6]
-            iteminfo["expression"] = res[7]
-            iteminfo["temporary"] = res[8]
-            iteminfo["hit_count"] = res[9]
-            iteminfo["hit_value"] = res[10]
-            iteminfo["hit_condition"] = res[11]
+            iteminfo = self.parse_breakpoint_info(info)
         except Exception,errinfo:
-            print errinfo, "breakpoint_list error:" + info + "\n"
+            print errinfo, "_parse_breakpoint_info error:" + info + "\n"
         return iteminfo
     
     def get_variables(self,param):
@@ -401,9 +392,7 @@ class pydbgpd_helper:
     
     def _get_all_variables(self):
         all_data = self._get_stack_variables()
-            
-        vrb = variables_tree_build()
-        return {"ret":1, "data":vrb.build(all_data)}
+        return {"ret":1, "data":all_data}
     
     def _get_context_variables(self, depth_id):
         data = self._pydbgpd.query('context_names')
@@ -467,7 +456,27 @@ class pydbgpd_helper:
                 
         return info    
     
-        
+    #data = "<dbgp.server.breakpoint: id:65920004 type:conditional filename:file:///D:/nginx-1.11.3/html/index.php lineno:30 function: state:enabled exception: expression:$i ==6 temporary:0 hit_count:0 hit_value:None hit_condition:None>"
+    def parse_breakpoint_info(self, data):
+        breakpoint_info = {}
+        keys = ["id","type","filename","lineno","function","state","exception","expression","temporary","hit_count","hit_value","hit_condition"]
+        data_end = data.rfind(">")
+        for key_index in range(0, len(keys)):
+            search_key = " " + keys[key_index] + ":"
+            index_start = data.find(search_key) + len(search_key)
+            if -1 == index_start:
+                raise debugger_exception("parse_breakpoint_info error: no keys" + keys[key_index] )
+            if key_index < len(keys) - 1:
+                next_key_index = key_index + 1
+                search_key = " " + keys[next_key_index] + ":"
+                index_end = data.find(search_key)
+                if -1 == index_end:
+                    raise debugger_exception("parse_breakpoint_info error: no keys" + keys[index_end] )
+            else:
+                index_end = data_end
+            breakpoint_info[keys[key_index]] = data[index_start:index_end]
+        return breakpoint_info
+    
 if __name__ == "__main__":
     pass
     #sub = pydbgpd_helper()
