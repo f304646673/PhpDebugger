@@ -121,7 +121,7 @@ function update_files(id,path) {
 
             $("#" + id + " ."+ data.type).html(highlight_code(data.type, context).value);     // ÉèÖÃ´úÂë¿éÄÚÈÝ
             modify_highlight(id);
-            update_file_line_breakpoint(id,path);
+            update_file_breakpoint_line_display(id,path);
             update_cur_run_line_no();
         }, "json");
 }
@@ -204,7 +204,7 @@ function update_cur_source_run_line_no() {
         function(data){
             if (data.ret == 1) {
                 openFiles(data["data"]["filename_last"], data["data"]["filename"], data["data"]["file_id"]);
-                update_file_line_breakpoint(data["data"]["file_id"], data["data"]["filename"])
+                update_file_breakpoint_line_display(data["data"]["file_id"], data["data"]["filename"])
                 set_current_run_line_no(data["data"]["file_id"], data["data"]["lineno"]);
             }
             console.log(data);
@@ -221,12 +221,19 @@ function update_cur_run_line_no() {
         }, "json");
 }
 
-function update_file_line_breakpoint(fileid,filename) {
+function update_cur_open_file_breakpoint_display() {
+    var fileid = $('#files_tab').tabs('getSelected').find("pre")[0].id;
+    var filename = $('#files_tab').tabs('getSelected').panel('options').title;
+    update_file_breakpoint_line_display(fileid,filename);
+}
+
+function update_file_breakpoint_line_display(fileid,filename) {
     var param = '{"filename":"' + filename + '"}';
     var param_en = base64_encode(param);
-    $.post("do", {"action":"get_file_line_breakpoint_lineno", "param":param_en},
+    $.post("do", {"action":"get_file_breakpoint_lineno", "param":param_en},
         function(data){
             if (data.ret == 1) {
+                $('#'+fileid + " ul .active").removeClass("active");
                 for (index = 0; index < data.breakpoint_list_lineno.length; index++) {
                     var lineno_index = data.breakpoint_list_lineno[index] - 1;
                     $('#'+fileid + " ul li:eq("+lineno_index+")").addClass('active');

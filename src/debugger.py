@@ -46,18 +46,13 @@ class debugger:
                     "breakpoint_list":[self.breakpoint_list, "json", False],
                     "add_breakpoint":[self.add_breakpoint, "json", False],
                     "remove_breakpoint":[self.remove_breakpoint, "json", False],
-                    #"set_line_breakpoint":[self.set_line_breakpoint, "json"],
-                    #"remove_line_breakpoint":[self.remove_line_breakpoint, "json"],
-                    #"check_con":[self.check_con, "json"],
                     "step_over":[self.step_over, "json", True],
                     "step_in":[self.step_in, "json", True],
                     "step_out":[self.step_out, "json", True],
                     "run":[self.run, "json", True],
-                    #"get_last_frame_info":[self.get_last_frame_info, "json"],
-                    #"source":[self.source, "json"],
                     "get_variables":[self.get_variables, "json", True],
                     "stack_get":[self.stack_get, "json", True],
-                    "get_file_line_breakpoint_lineno":[self.get_file_line_breakpoint_lineno, "json", True],
+                    "get_file_breakpoint_lineno":[self.get_file_breakpoint_lineno, "json", False],
                     "start_debug":[self.start_debug, "json", False],
                     "stop_debug":[self.stop_debug, "json", False],
                     "get_variable_watch":[self.get_variable_watch, "json", True],
@@ -239,17 +234,22 @@ class debugger:
     def remove_breakpoint(self,param):
         param_de = base64.b64decode(param)
         param_json = json.loads(param_de)
-        (breakpoint_key, breakpoint_value) = self._get_breakpoint_info(param_json)
+        if "itemid" in param_json.keys():
+            breakpoint_key = param_json["itemid"]
+        else:
+            (breakpoint_key, breakpoint_value) = self._get_breakpoint_info(param_json)
+            
         if self._debugger_helper and self._debugger_helper.is_session():
             if breakpoint_key not in self._breakpoint_list.keys():
-                remove_ret = self._debugger_helper.do("add_breakpoint", breakpoint_value["id"])
+                remove_ret = self._debugger_helper.do("remove_breakpoint", breakpoint_value["id"])
                 if remove_ret["ret"] == 1:
                     del self._breakpoint_list[breakpoint_key]
                     return {"ret":1}
                 else:
                     return {"ret":0}
         else:
-            del self._breakpoint_list[breakpoint_key]
+            if breakpoint_key in self._breakpoint_list.keys():
+                del self._breakpoint_list[breakpoint_key]
             
         return {"ret":1}
     
@@ -334,10 +334,11 @@ class debugger:
             breakpoint_list_info.append(item)
         return breakpoint_list_info
     
-    def get_file_line_breakpoint_lineno(self,param):
+    def get_file_breakpoint_lineno(self,param):
         breakpoint_list_lineno = []
         for (key,value) in self._breakpoint_list.items():
-            breakpoint_list_lineno.append(value["lineno"])
+            if "lineno" in value.keys():
+                breakpoint_list_lineno.append(value["lineno"])
         return {"ret":1, "breakpoint_list_lineno":breakpoint_list_lineno}
     
 def test_no_action():

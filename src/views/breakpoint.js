@@ -10,6 +10,12 @@ function get_breakpoint_list() {
     $.post("do", {"action":"breakpoint_list", "param":""},
         function(data){
             $.each(data, function(n,value){
+                var del_html = "<button onclick='remove_breakpoint(\""+ value.itemid + "\");' style='width:100%;heigth:100%;'>delete</button>"
+                var expression_de = value.expression;
+                if (value.expression != undefined) {
+                    expression_de = base64_decode(value.expression);
+                }
+                
                 $('#breakpoint_datagrid').datagrid('insertRow',{
                     index: n,	// index start with 0
                     row: {
@@ -20,11 +26,12 @@ function get_breakpoint_list() {
                         state: value.state,
                         function: value.function,
                         exception:value.exception,
-                        expression:value.expression,
+                        expression:expression_de,
                         temporary:value.temporary,
                         hit_count:value.hit_count,
                         hit_value:value.hit_value,
                         hit_condition:value.hit_condition,
+                        operation:del_html,
                     }
                 });
                 console.log(value)
@@ -68,6 +75,7 @@ function add_breakpoint_line(filename, lineno) {
             if (data.ret == 1) {
                 add_breakpoint_dlg_close();
             }
+            update_cur_selected_tab_info();
             console.log(data);
     }, "json");
 }
@@ -89,6 +97,7 @@ function add_breakpoint_call(function_name) {
             if (data.ret == 1) {
                 add_breakpoint_dlg_close();
             }
+            update_cur_selected_tab_info();
             console.log(data);
     }, "json");
     
@@ -111,6 +120,8 @@ function add_breakpoint_return(function_name) {
             if (data.ret == 1) {
                 add_breakpoint_dlg_close();
             }
+            update_cur_selected_tab_info();
+            update_cur_open_file_breakpoint_display();
             console.log(data);
     }, "json");
 }
@@ -132,6 +143,8 @@ function add_breakpoint_exception(exception_name) {
             if (data.ret == 1) {
                 add_breakpoint_dlg_close();
             }
+            update_cur_selected_tab_info();
+            update_cur_open_file_breakpoint_display();
             console.log(data);
     }, "json");
     
@@ -156,6 +169,8 @@ function add_breakpoint_condition(filename, lineno, expression) {
             if (data.ret == 1) {
                 add_breakpoint_dlg_close();
             }
+            update_cur_selected_tab_info();
+            update_cur_open_file_breakpoint_display();
             console.log(data);
     }, "json"); 
 }
@@ -187,6 +202,19 @@ function set_line_breakpoint(path,lineno) {
     var param_en = base64_encode(param);
     $.post("do", {"action":"add_breakpoint", "param":param_en},
         function(data){
+            update_cur_selected_tab_info();
+            console.log(data);
+        }, "json");
+}
+
+function remove_breakpoint(id) {
+    var param = '{"itemid":"' + id + '"}';
+    var param_en = base64_encode(param);
+    $.post("do", {"action":"remove_breakpoint", "param":param_en},
+        function(data){
+          //alert(data.name);
+          update_cur_selected_tab_info();
+          update_cur_open_file_breakpoint_display();
           console.log(data);
         }, "json");
 }
@@ -196,7 +224,8 @@ function remove_line_breakpoint(path, lineno) {
     var param_en = base64_encode(param);
     $.post("do", {"action":"remove_breakpoint", "param":param_en},
         function(data){
-          //alert(data.name);
+          //alert(data.name)
+          update_cur_selected_tab_info();;
           console.log(data);
         }, "json");
 }

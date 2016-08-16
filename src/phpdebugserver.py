@@ -44,37 +44,9 @@ def main_page():
 def highlight_file(filepath):
     return static_file(filepath, root='views')
 
-@route('/cmd', method='Get')
-def request_cmd_get():
-    return template('index', **request.forms)
-
-@route('/test', method='Get')
-def request_cmd_get():
-    return template('test', **request.forms)
-
 @route('/frame', method='Get')
 def request_cmd_get():
     return template('frame', **request.forms)
-
-@route('/cmd1', method='POST')
-def request_cmd_post():
-    cmd = request.forms.get("cmd")
-    if None == cmd or len(cmd) == 0:
-        return template('index')
-    
-    global sub
-    data = sub.query(cmd)
-    print data
-    request.forms.replace("result", data)
-    
-    info = sub.get_info()
-    encodedjson = json.dumps(info)
-    request.forms.append('info', encodedjson)
-    
-    src = sub.get_file_src()
-    request.forms.append('src', src)
-    
-    return template('index', **request.forms)
 
 @route('/cmd', method='POST')
 def request_cmd_post():
@@ -211,10 +183,6 @@ def request_variables():
             return json.dumps({"ret":0});
     else:
         return template('index', **request.forms)
-    
-@route('/hello')
-def hello():
-    return "Hello World!"
 
 if __name__ == "__main__":
     try:

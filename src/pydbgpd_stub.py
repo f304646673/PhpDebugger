@@ -147,7 +147,7 @@ class pydbgpd_stub:
     def _listenData(self):
         self._write_ready = True
         while True:
-            if (self._stop_thread):
+            if self._stop_thread:
                 break
             if len(self._out_data) > 0:
                 ret = ""
@@ -171,9 +171,9 @@ class pydbgpd_stub:
     
     def _read_stdout_thread(self):
         while True:
-            if (self._stop_thread):
+            if self._stop_thread:
                 break
-            if (False == self._write_ready):
+            if False == self._write_ready or not self._process:
                 time.sleep(0.01) 
                 continue
             line = self._process.stdout.readline()

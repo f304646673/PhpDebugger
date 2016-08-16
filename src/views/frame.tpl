@@ -102,9 +102,11 @@
                                         <th data-options="field:'lineno',align:'center'" width="60">Lineno</th>
                                         <th data-options="field:'function',align:'center'" width="180">Function</th>
                                         <th data-options="field:'exception',align:'center'" width="150">Exception</th>
-                                        <th data-options="field:'hit_value',align:'center'" width="150">Hit_value</th>
-                                        <th data-options="field:'hit_condition',align:'center'" width="250">Hit_condition</th>
-                                        <th data-options="field:'hit_count',align:'center'" width="80">Hit_count</th>
+                                        <th data-options="field:'expression',align:'center'" width="250">Expression</th>
+                                        <th data-options="field:'hit_value',align:'center'" width="120">Hit_value</th>
+                                        <th data-options="field:'hit_condition',align:'center'" width="150">Hit_condition</th>
+                                        <th data-options="field:'hit_count',align:'center'" width="100">Hit_count</th>
+                                        <th data-options="field:'operation',align:'center'" width="100">Operation</th>
                                     </tr>
                                 </thead>
                             </table>  
