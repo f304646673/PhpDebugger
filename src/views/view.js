@@ -52,7 +52,6 @@ var rigth_click_file_path = "";
 function modify_highlight(id) {
     var $numbering;
     
-    
     //var ul_id = id + "_pre-numbering";
     $('#'+id).each(function(){
         var lines = $(this).text().split('\n').length;

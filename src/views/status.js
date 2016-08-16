@@ -53,10 +53,8 @@ function debugger_status_init() {
     $("#start_stop_debug").switchbutton({
         checked:false
     });
-    $("#run_debug").linkbutton('disable');
-    $("#step_over_debug").linkbutton('disable');
-    $("#step_in_debug").linkbutton('disable');
-    $("#step_out_debug").linkbutton('disable');
+    dis_en_able_debug_buttons_status(false);
+    
     remove_run_line_no();
 }
 
@@ -64,20 +62,52 @@ function debugger_status_listen() {
     $("#start_stop_debug").switchbutton({
         checked:true
     });
-    $("#run_debug").linkbutton('enable');
-    $("#step_over_debug").linkbutton('enable');
-    $("#step_in_debug").linkbutton('enable');
-    $("#step_out_debug").linkbutton('enable');
-    remove_run_line_no();
+    dis_en_able_debug_buttons_status(true);
+    
+    remove_run_line_no();    
 }
 
 function debugger_status_debug() {
     $("#start_stop_debug").switchbutton({
         checked:true
     });
-    $("#run_debug").linkbutton('enable');
-    $("#step_over_debug").linkbutton('enable');
-    $("#step_in_debug").linkbutton('enable');
-    $("#step_out_debug").linkbutton('enable');
+    dis_en_able_debug_buttons_status(true);
+    
     update_cur_source_run_line_no();
 }
+
+function dis_en_able_debug_buttons_status(enable) {
+    dis_en_able_linkbuttons(enable);
+    dis_en_able_tools_menu_items(enable);
+}
+
+function dis_en_able_linkbuttons(enable) {
+    var linkbuttons_names = [
+        "run_debug",
+        "step_over_debug",
+        "step_in_debug",
+        "step_out_debug"
+    ];
+    
+    var cmd = enable ? 'enable' : 'disable';
+    
+    for (var index = 0;index < linkbuttons_names.length;index++) {
+         $("#"+linkbuttons_names[index]).linkbutton(cmd);
+    }
+}
+
+function dis_en_able_tools_menu_items(enable) {
+    var tools_memu_content_list = [
+        "tools_memu_content_run", 
+        "tools_memu_content_step_over",
+        "tools_memu_content_step_in",
+        "tools_memu_content_step_out"];
+    
+    var cmd = enable ? 'enableItem' : 'disableItem';
+    
+    for (var index = 0;index < tools_memu_content_list.length;index++) {
+        var itemEl = $('#'+tools_memu_content_list[index])[0];
+        $("#tools_memu_content").menu(cmd, itemEl);
+    }
+}
+

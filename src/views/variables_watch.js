@@ -55,6 +55,7 @@ function check_variable_watch_tab_exist(id) {
 }
 
 function get_variables_watch() {
+    $('#breakpoint_add_dialog_tabs').tabs("select", "Variable Watch");
     $.get("variables_watch", {"action":"get_list", "param":""},
         function(data){
             console.log(data);

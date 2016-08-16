@@ -52,6 +52,7 @@ function check_file_watch_tab_exist(id) {
 }
 
 function get_files_watch() {
+    $('#breakpoint_add_dialog_tabs').tabs("select", "Files Watch");
     $.get("files_watch", {"action":"get_list", "param":""},
         function(data){
             console.log(data);

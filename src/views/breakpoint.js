@@ -5,6 +5,7 @@
  */
 
 function get_breakpoint_list() {
+    $('#breakpoint_add_dialog_tabs').tabs("select", "Breakpoint");
     $('#breakpoint_datagrid').datagrid('loadData',[]);
     $.post("do", {"action":"breakpoint_list", "param":""},
         function(data){

@@ -27,9 +27,10 @@
         <script src="/files/third/jquery_base64_js/jquery.base64.js"></script>
         
         <script type="text/javascript">
-            $.ajaxSetup({
-                async: false
-            });
+            //$.ajaxSetup({
+            //    async: false,
+            //    cache:false
+            //});
   
             function base64_decode(data) {
                 return $.base64.atob(data, true);
@@ -198,10 +199,10 @@
         <div id="tools_memu_content" style="width:150px;">
             <div data-options="iconCls:'icon-breakpoint-add'" onclick="add_breakpoint_dlg_open();">Add Breakpoint</div>
             <div class="menu-sep"></div>
-            <div data-options="iconCls:'icon-run'" onclick="run();">Run</div>
-            <div data-options="iconCls:'icon-step-over'" onclick="step_over();">Step Over</div>
-            <div data-options="iconCls:'icon-step-in'" onclick="step_in();">Step In</div>
-            <div data-options="iconCls:'icon-step-out'" onclick="step_out();">Step Out</div>
+            <div id="tools_memu_content_run" data-options="iconCls:'icon-run',disabled:true" onclick="run();">Run</div>
+            <div id="tools_memu_content_step_over" data-options="iconCls:'icon-step-over',disabled:true" onclick="step_over();">Step Over</div>
+            <div id="tools_memu_content_step_in" data-options="iconCls:'icon-step-in',disabled:true" onclick="step_in();">Step In</div>
+            <div id="tools_memu_content_step_out" data-options="iconCls:'icon-step-out',disabled:true" onclick="step_out();">Step Out</div>
             <div class="menu-sep"></div>
             <div data-options="iconCls:'icon-add'" onclick="add_files_watch_dlg_open();">Add File Watch</div>
             <div class="menu-sep"></div>
@@ -340,12 +341,11 @@
         
                 
         <div id="right_click_src_menu" class="easyui-menu" style="width:280px;" data-options="onShow:save_selected_text">
-            <div id="right_click_src_menu_add_variable_watch" onclick="add_variable_watch_by_menu();">Add Variable Watch</div>
+            <div id="right_click_src_menu_add_variable_watch" data-options="iconCls:'icon-variables-watch-add'" onclick="add_variable_watch_by_menu();">Add Variable Watch</div>
             <div id="right_click_src_menu_add_exception_breakpoint" onclick="add_breakpoint_exception_by_menu();">Add Exception Breakpoint</div>
             <div id="right_click_src_menu_add_function_call_breakpoint" onclick="add_breakpoint_call_by_menu();">Add Function Call Breakpoint</div>
             <div id="right_click_src_menu_add_function_return_breakpoint" onclick="add_breakpoint_return_by_menu();">Add Function Return Breakpoint</div>
         </div>
         
-		
     </body>
 </html>

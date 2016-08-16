@@ -4,9 +4,8 @@
  * and open the template in the editor.
  */
 
-
-
 function get_stack_list() {
+    $('#breakpoint_add_dialog_tabs').tabs("select", "Stack");
     $.post("do", {"action":"stack_get", "param":""},
         function(data){
             if (data.ret == 1) {
