@@ -6,6 +6,7 @@ import time
 import json
 import base64
 import md5
+import threading
 from threading import Thread
 from pydbgpd_helper import pydbgpd_helper
 from debugger_exception import debugger_exception
@@ -16,7 +17,10 @@ class debugger:
     _debugger_helper = None
     _status = -1                 #-1 Uninit 0 Init 1 Listen 2 debug
     _debug_thread = None
-    _debug_stop_signal = False
+    
+    _accept_user_action_event = None
+    _state_machine_stop_event = None
+    
     _pre_variables = {}
     _cur_variables = {}
     
@@ -30,32 +34,36 @@ class debugger:
     }
         
     def __init__(self):
+        self._state_machine_stop_event = threading.Event()
+        self._state_machine_stop_event.clear()
+        self._accept_user_action_event = threading.Event()
+        self._accept_user_action_event.set()
         pass
         
     def __del__(self):
         pass
     
     def do(self, action, param):
-        
-        actions = {"get_debugger_status":[self.get_debugger_status, "json", False],
-                    "start_listen":[self.start_listen, "json", True],
-                    "stop_listen":[self.stop_listen, "json", True],
-                    "select_first_session":[self.select_first_session, "json", True],
-                    "get_cur_stack_info":[self.get_cur_stack_info, "json", True],
-                    "query":[self.query, "json", True],
-                    "breakpoint_list":[self.breakpoint_list, "json", False],
-                    "add_breakpoint":[self.add_breakpoint, "json", False],
-                    "remove_breakpoint":[self.remove_breakpoint, "json", False],
-                    "step_over":[self.step_over, "json", True],
-                    "step_in":[self.step_in, "json", True],
-                    "step_out":[self.step_out, "json", True],
-                    "run":[self.run, "json", True],
-                    "get_variables":[self.get_variables, "json", True],
-                    "stack_get":[self.stack_get, "json", True],
-                    "get_file_breakpoint_lineno":[self.get_file_breakpoint_lineno, "json", False],
-                    "start_debug":[self.start_debug, "json", False],
-                    "stop_debug":[self.stop_debug, "json", False],
-                    "get_variable_watch":[self.get_variable_watch, "json", True],
+        actions = {"run":[self.run, "json", True, True],
+                    "query":[self.query, "json", True, True],
+                    "step_in":[self.step_in, "json", True, True],
+                    "step_out":[self.step_out, "json", True, True],
+                    "step_over":[self.step_over, "json", True, True],
+                    "stack_get":[self.stack_get, "json", True, True],
+                    "get_variables":[self.get_variables, "json", True, True],
+                    "modify_variable":[self.modify_variable, "json", True, True],
+                    "get_cur_stack_info":[self.get_cur_stack_info, "json", True, True],
+                    "get_variable_watch":[self.get_variable_watch, "json", True, True],
+                    "select_first_session":[self.select_first_session, "json", True, True],
+                    
+                    "stop_debug":[self.stop_debug, "json", False, False],
+                    "start_debug":[self.start_debug, "json", False, False],
+                    "breakpoint_list":[self.breakpoint_list, "json", False, False],
+                    "get_debugger_status":[self.get_debugger_status, "json", False, False],
+                    "get_file_breakpoint_lineno":[self.get_file_breakpoint_lineno, "json", False, False],
+                    
+                    "add_breakpoint":[self.add_breakpoint, "json", False, True],
+                    "remove_breakpoint":[self.remove_breakpoint, "json", False, True],
                     }
                     
         if action not in actions.keys():
@@ -63,6 +71,9 @@ class debugger:
         
         if False == isinstance(param,basestring):
             raise debugger_exception("param is invalid")
+        
+        if actions[action][3] and False == self._accept_user_action_event.isSet():
+            return ({"ret":0}, "json")
         
         if actions[action][2]:
             if not self._debugger_helper:
@@ -84,9 +95,9 @@ class debugger:
             listen_ret = self._debugger_helper.do("start_listen", "")
             if listen_ret["ret"] == 0:
                 return {"ret" :0}
-        
+
         if not self._debug_thread:
-            self._debug_stop_signal = False
+            self._state_machine_stop_event.clear()
             self._debug_thread = Thread(target=self._debug_routine)
             self._debug_thread.daemon = True # thread dies with the program
             self._debug_thread.start()
@@ -95,7 +106,7 @@ class debugger:
     def stop_debug(self,param):
         if self._debug_thread:
             while self._debug_thread.is_alive():
-                self._debug_stop_signal = True
+                self._state_machine_stop_event.set()
                 time.sleep(0.5)
             self._debug_thread = None
         
@@ -120,18 +131,21 @@ class debugger:
             self._breakpoint_list[breakpoint_key]["state"] = "disable"
     
     def _add_all_breakpoint(self):
+        update_keys = ["id", "state", "hit_value", "hit_condition", "hit_count"]
         for (breakpoint_key,breakpoint_value) in self._breakpoint_list.items():
             add_ret = self._debugger_helper.do("add_breakpoint", breakpoint_value)
             if add_ret["ret"] == 1:
-                self._breakpoint_list[breakpoint_key] = add_ret["breakpoint"]
+                for item in update_keys:
+                        if item in add_ret["breakpoint"].keys():
+                            self._breakpoint_list[breakpoint_key][item] = add_ret["breakpoint"][item]
             
     def _debug_routine(self):
-        while False == self._debug_stop_signal:
+        while False == self._state_machine_stop_event.isSet():
             time.sleep(0.5)
             sessions = self._debugger_helper.do("sessions", "")
             for session_id in sessions:
                 self._debug_session(session_id)
-                if self._debug_stop_signal:
+                if self._state_machine_stop_event.isSet():
                     break
         self._debugger_helper.do("quit","")
         self._reset_all_breakpoint()
@@ -141,46 +155,44 @@ class debugger:
         if select_ret["ret"] == 0:
             print "select error"
             return
+        
+        self._accept_user_action_event.clear()
         self._reset_all_breakpoint()
         self._add_all_breakpoint()
-        if len(self._breakpoint_list):
-            self._debugger_helper.do("run","")
-        else:
-            self._debugger_helper.do("step_over","")
 
         status_ret = self._debugger_helper.do("status","")
-        while True:
-            if self._debug_stop_signal:
-                break
+        while False == self._state_machine_stop_event.isSet():
             if status_ret["ret"] == 0:
                 break
+            if status_ret["status"] == 1:
+                self._accept_user_action_event.set()
+                if len(self._breakpoint_list):
+                    self._debugger_helper.do("run","")
+                else:
+                    self._debugger_helper.do("step_over","")
+            if status_ret["status"] == 2:
+                self._accept_user_action_event.set()
             if status_ret["status"] == 3:
+                self._accept_user_action_event.clear()
                 self._debugger_helper.do("run","")
             if status_ret["status"] == 4:
+                self._accept_user_action_event.clear()
                 break
             status_ret = self._debugger_helper.do("status","")
-            
+        
         if status_ret["status"] != 0:
             self._debugger_helper.do("exit","")
-
-    def start_listen(self,param):
-        ret = self._debugger_helper.do("start_listen", param)
-        if ret["ret"] == 1:
-            self._status = 1
-        return ret
-    
-    def stop_listen(self,param):
-        ret =  self._debugger_helper.do("stop_listen", param)
-        if ret["ret"] == 1:
-            self._status = 0
-        return ret
+        self._pre_variables = {}
+        self._cur_variables = {}
+        
+        self._accept_user_action_event.set()
     
     def query(self,param):
         param_de = base64.b64decode(param)
         param_json = json.loads(param_de)
         if "cmd" not in param_json.keys():
             raise debugger_exception("query cmd is needed");
-        return self._debugger_helper.query(param_json["cmd"])
+        return self._debugger_helper.query(base64.b64decode(param_json["cmd"]))
   
     def _generate_breakpoint_key(self,breakpoint_info):
         if "type" not in breakpoint_info.keys():
@@ -214,33 +226,48 @@ class debugger:
         return (breakpoint_info_key, breakpoint_info)
 
     def add_breakpoint(self,param):
+        update_keys = ["id", "state", "hit_value", "hit_condition", "hit_count"]
         param_de = base64.b64decode(param)
         param_json = json.loads(param_de)
         (breakpoint_key, breakpoint_value) = self._get_breakpoint_info(param_json)
         #breakpoint_set_keys = ["type", "filename", "lineno", "function", "state", "exception", "expression", "temporary", "hit_count", "hit_value", "hit_condition"]
-        if self._debugger_helper and self._debugger_helper.is_session():
-            if breakpoint_key not in self._breakpoint_list.keys():
+        
+        if breakpoint_key not in self._breakpoint_list.keys():
+            self._breakpoint_list[breakpoint_key] = breakpoint_value
+            self._breakpoint_list[breakpoint_key]["state"] = "disable"
+            if self._debugger_helper and self._debugger_helper.is_session():
                 add_ret = self._debugger_helper.do("add_breakpoint", breakpoint_value)
+                print add_ret
                 if add_ret["ret"] == 1:
-                    self._breakpoint_list[breakpoint_key] = add_ret["breakpoint"]
+                    for item in update_keys:
+                        if item in add_ret["breakpoint"].keys():
+                            self._breakpoint_list[breakpoint_key][item] = add_ret["breakpoint"][item]
                     return {"ret":1}
                 else:
                     return {"ret":0}
-        else:
-            self._breakpoint_list[breakpoint_key] = breakpoint_value
-            self._breakpoint_list[breakpoint_key]["state"] = "disable"
         return {"ret":1}
         
+    def get_breakpoint_info_by_param(self,param_json):
+        breakpoint_key = ""
+        breakpoint_value = {}
+        if "itemid" in param_json.keys():
+            breakpoint_key = param_json["itemid"]
+            if breakpoint_key in self._breakpoint_list.keys():
+                breakpoint_value = self._breakpoint_list[breakpoint_key]
+        else:
+            (breakpoint_key, breakpoint_value_t) = self._get_breakpoint_info(param_json)
+            if breakpoint_key in self._breakpoint_list.keys():
+                breakpoint_value = self._breakpoint_list[breakpoint_key]
+        return (breakpoint_key,breakpoint_value)
+            
     def remove_breakpoint(self,param):
         param_de = base64.b64decode(param)
         param_json = json.loads(param_de)
-        if "itemid" in param_json.keys():
-            breakpoint_key = param_json["itemid"]
-        else:
-            (breakpoint_key, breakpoint_value) = self._get_breakpoint_info(param_json)
-            
+        print self._breakpoint_list
+        (breakpoint_key, breakpoint_value) = self.get_breakpoint_info_by_param(param_json)
+        print breakpoint_key, breakpoint_value
         if self._debugger_helper and self._debugger_helper.is_session():
-            if breakpoint_key not in self._breakpoint_list.keys():
+            if breakpoint_key in self._breakpoint_list.keys():
                 remove_ret = self._debugger_helper.do("remove_breakpoint", breakpoint_value["id"])
                 if remove_ret["ret"] == 1:
                     del self._breakpoint_list[breakpoint_key]
@@ -254,11 +281,13 @@ class debugger:
         return {"ret":1}
     
     def modify_breakpoint(self):
+        update_keys = ["id", "state", "hit_value", "hit_condition", "hit_count"]
         for (key, value) in self._breakpoint_list.items():
             add_ret = self._debugger_helper.do("add_breakpoint", value)
             if add_ret["ret"] == 1:
-                del self._breakpoint_list[key]
-                self._breakpoint_list[key] = add_ret["breakpoint"]
+                for item in update_keys:
+                    if item in add_ret["breakpoint"].keys():
+                        self._breakpoint_list[key][item] = add_ret["breakpoint"][item]
             else:
                 self._breakpoint_list[key]["state"] = "disable"
     
@@ -307,7 +336,6 @@ class debugger:
         return {"ret":1, "id":id, "name":param_de, "data":new_data}
     
     def _search_variable(self,data,name):
-        print data
         if "ret" not in data.keys():
             return {"type":'uninitialized', "value":"",'name':name}
         if "data" not in data.keys():
@@ -335,12 +363,32 @@ class debugger:
         return breakpoint_list_info
     
     def get_file_breakpoint_lineno(self,param):
+        param_de = base64.b64decode(param)
+        param_json = json.loads(param_de)
+        if "filename" not in param_json.keys():
+            raise debugger_exception("param is invalid")
+        
         breakpoint_list_lineno = []
         for (key,value) in self._breakpoint_list.items():
+            if param_json["filename"] != value["filename"]:
+                continue
             if "lineno" in value.keys():
                 breakpoint_list_lineno.append(value["lineno"])
         return {"ret":1, "breakpoint_list_lineno":breakpoint_list_lineno}
     
+    def modify_variable(self,param):
+        print param
+        param_de = base64.b64decode(param)
+        print param_de
+        param_json = json.loads(param_de)
+        print param_json
+        if "value" not in param_json.keys() or "name" not in param_json.keys():
+            return {"ret":0}
+        exucte_cmd = param_json["name"] + "=" + base64.b64decode(param_json["value"])
+        print exucte_cmd
+        data = self._debugger_helper.do("eval", exucte_cmd)
+        return data
+        
 def test_no_action():
     d = debugger()
     d.do("no_action", "")

@@ -107,30 +107,29 @@ class pydbgpd_helper:
     def do(self, action, param):
         actions = {"start_listen":self.start_listen,
                     "stop_listen":self.stop_listen,
-                    "get_cur_stack_info":self.get_cur_stack_info,
                     
                     "run":self.run,
-                    "step_over":self.step_over,
-                    "step_in":self.step_in,
-                    "step_out":self.step_out,
-                    "get_variables":self.get_variables,
-                    "stack_get":self.stack_get,
-                    "add_breakpoint":self.add_breakpoint,
-                    "remove_breakpoint":self.remove_breakpoint,
-                    "source":self.source,
-                    
-                    "sessions":self.sessions,
-                    "select":self.select,
-                    "status":self.status,
+                    "eval":self.eval,
                     "quit":self.quit,
                     "stop":self.stop,
                     "exit":self.exit,
-                    
+                    "select":self.select,
+                    "status":self.status,
+                    "source":self.source,
+                    "step_in":self.step_in,
+                    "step_out":self.step_out,
+                    "sessions":self.sessions,
+                    "step_over":self.step_over,
+                    "stack_get":self.stack_get,
+                    "get_variables":self.get_variables,
+                    "add_breakpoint":self.add_breakpoint,
+                    "select_first_session":self.check_con,
+                    "breakpoint_list":self.breakpoint_list,
+                    "remove_breakpoint":self.remove_breakpoint,
+                    "get_cur_stack_info":self.get_cur_stack_info,
+                    "get_last_frame_info":self.get_last_frame_info,
                     "set_line_breakpoint":self.set_line_breakpoint,
                     "remove_line_breakpoint":self.remove_line_breakpoint,
-                    "select_first_session":self.check_con,
-                    "get_last_frame_info":self.get_last_frame_info,
-                    "breakpoint_list":self.breakpoint_list,
                     }
                     
         if not self._pydbgpd:
@@ -194,6 +193,12 @@ class pydbgpd_helper:
         else:
             ret = 1
         return {"ret":ret, "breakpoint":iteminfo}
+    
+    #name: $a=1 type: int value: 1
+    def eval(self, param):
+        query = "eval " + param
+        data = self._pydbgpd.query(query)
+        return {"ret":1}
     
     def remove_breakpoint(self,breakpointid):
         query = "breakpoint_remove -d " + breakpointid

@@ -36,17 +36,32 @@ function change_debugger_status(status) {
     
     switch (status) {
         case -1:
-        case 3:
             debugger_status_init();
+            $("#ft")[0].innerHTML = "1111";
             break;
         case 0:
             debugger_status_listen();
+            $("#ft")[0].innerHTML = "Listening";
+            break;
+        case 1:
+            $("#ft")[0].innerHTML = "Starting";
             break;
         case 2:
             debugger_status_debug();
+            $("#ft")[0].innerHTML = "Break";
+            break;
+        case 3:
+            $("#ft")[0].innerHTML = "Stopping";
+            break;
+        case 4:
+            $("#ft")[0].innerHTML = "Stopped";
+            break;
+        case 5:
+            $("#ft")[0].innerHTML = "Waiting Reponse";
             break;
     }
     cur_status = status;
+    update_cur_selected_tab_info();
 }
 
 function debugger_status_init() {
@@ -72,7 +87,6 @@ function debugger_status_debug() {
         checked:true
     });
     dis_en_able_debug_buttons_status(true);
-    
     update_cur_source_run_line_no();
 }
 

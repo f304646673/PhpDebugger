@@ -34,7 +34,7 @@ $(document).ready(function(){
 });
 
 function excute_console_cmd(cmd) {
-    var param = '{"cmd":"' + cmd + '"}';
+    var param = '{"cmd":"' + base64_encode(cmd) + '"}';
     var param_en = base64_encode(param);
     $.post("do", {"action":"query", "param":param_en},
         function(data){

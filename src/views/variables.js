@@ -73,11 +73,3 @@ function show_variable_in_dialog(name, data) {
     $('#variables_show_json-renderer').jsonViewer(theJsonValue, options);
     $('#variables_show').dialog('open').dialog('center').dialog('setTitle',name);
 }
-
-function add_variable_watch_in_dialog_from_menucontent() {
-    var node = $('#variables_treegrid').treegrid('getSelected');
-    if (node && node.type != ""){
-        add_variables_watch_dlg_open();
-        $('#add_variables_watch_add_dlg_variable_name').textbox("setText", node.name);
-    }
-}

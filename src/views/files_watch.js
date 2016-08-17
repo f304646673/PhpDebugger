@@ -26,7 +26,7 @@ function add_files_watch_dlg_open() {
 
 function add_files_watch_dlg_close() {
     $('#add_files_watch_add_dlg_file_name').textbox('clear');
-    $('#add_files_watch_dlg').dialog('open').dialog('close');
+    $('#add_files_watch_dlg').dialog('close');
 }
 
 function add_file_watch_request() {

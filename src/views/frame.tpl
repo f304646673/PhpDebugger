@@ -7,6 +7,7 @@
         
         <script src="/files/third/jquery3_1/jquery-3.1.0.js" type="text/javascript"></script>
         
+        <script type="text/javascript" src="/files/modify_variable.js"></script>
         <script type="text/javascript" src="/files/status.js"></script>
         <script type="text/javascript" src="/files/console.js"></script>
         <script type="text/javascript" src="/files/variables.js"></script>
@@ -31,6 +32,9 @@
             //    async: false,
             //    cache:false
             //});
+            $.ajaxSetup({
+                timeout : 1000
+            });
   
             function base64_decode(data) {
                 return $.base64.atob(data, true);
@@ -168,7 +172,7 @@
         <div id="add_folder_dlg" class="easyui-dialog" style="width:400px;height:150px;padding:10px 20px"
             closed="true" buttons="#add_folder_dlg_buttons" data-options="iconCls:'icon-folder-add',resizable:false,modal:true">
             <label>Folder Path:</label>
-            <input name="add_folder_dlg_folder_path" class="easyui-textbox" style="width:350px;" required="true">
+            <input name="add_folder_dlg_folder_path" class="easyui-textbox" style="width:340px;" required="true">
         </div>
                         
         <div id="add_folder_dlg_buttons">
@@ -179,7 +183,7 @@
         <div id="add_files_watch_dlg" class="easyui-dialog" style="width:400px;height:150px;padding:10px 20px"
             closed="true" buttons="#add_files_watch_dlg_buttons" data-options="iconCls:'icon-add'">
             <label>Files Path:</label>
-            <input id="add_files_watch_add_dlg_file_name" type="text" class="easyui-textbox" style="width:340px;">    
+            <input id="add_files_watch_add_dlg_file_name" class="easyui-textbox" class="easyui-textbox" style="width:340px;">    
         </div>
                         
         <div id="add_files_watch_dlg_buttons">
@@ -187,10 +191,23 @@
             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="add_files_watch_dlg_close();" style="width:90px">Cancel</a>
         </div>    
                         
+        <div id="modify_variable_dlg" class="easyui-dialog" style="width:600px;height:650px;padding:10px 20px"
+            closed="true" buttons="#modify_variable_dlg_buttons" data-options="iconCls:'icon-pencil',modal:true">
+            <label>Variable Name:</label>
+            <input id="modify_variable_dlg_variable_name" class="easyui-textbox" class="easyui-textbox" style="width:540px;">
+            <label>Variable Value:</label>
+            <input id="modify_variable_dlg_variable_value" class="easyui-textbox" data-options="multiline:true" class="easyui-textbox" style="width:540px;height:500px;">  
+        </div>
+                        
+        <div id="modify_variable_dlg_buttons">
+            <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="modify_variable_request();" style="width:90px">Save</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="modify_variable_dlg_close();" style="width:90px">Cancel</a>
+        </div>
+                        
         <div id="add_variables_watch_dlg" class="easyui-dialog" style="width:400px;height:150px;padding:10px 20px"
             closed="true" buttons="#add_variables_watch_dlg_buttons" data-options="iconCls:'icon-variables-watch-add'">
             <label>Variable Name:</label>
-            <input id="add_variables_watch_add_dlg_variable_name" type="text" class="easyui-textbox" style="width:340px;">        
+            <input id="add_variables_watch_add_dlg_variable_name" class="easyui-textbox" class="easyui-textbox" style="width:340px;">        
         </div>
                           
         <div id="add_variables_watch_dlg_buttons">
@@ -205,6 +222,8 @@
             <div id="tools_memu_content_step_over" data-options="iconCls:'icon-step-over',disabled:true" onclick="step_over();">Step Over</div>
             <div id="tools_memu_content_step_in" data-options="iconCls:'icon-step-in',disabled:true" onclick="step_in();">Step In</div>
             <div id="tools_memu_content_step_out" data-options="iconCls:'icon-step-out',disabled:true" onclick="step_out();">Step Out</div>
+            <div class="menu-sep"></div>
+            <div data-options="iconCls:'icon-pencil'" onclick="modify_variable_dlg_open();">Modify Variable</div>
             <div class="menu-sep"></div>
             <div data-options="iconCls:'icon-add'" onclick="add_files_watch_dlg_open();">Add File Watch</div>
             <div class="menu-sep"></div>
@@ -241,12 +260,13 @@
         <div id="variables_treegrid_contextmenu" class="easyui-menu" style="width:160px;">
             <div onclick="show_variable_in_dialog_from_menucontent()" data-options="iconCls:'icon-search'">Show</div>
             <div onclick="add_variable_watch_in_dialog_from_menucontent()" data-options="iconCls:'icon-variables-watch-add'">Add Variable Watch</div>
+            <div onclick="eval_variable_in_dialog_from_menucontent()" data-options="iconCls:'icon-pencil'">Modify Value</div>
             <div class="menu-sep"></div>
             <div onclick="variables_treegrid_contextmenu_collapse()">Collapse</div>
             <div onclick="variables_treegrid_contextmenu_expand()">Expand</div>
         </div>
                         
-        <div id="ft" style="padding:5px;">Footer Content.</div>
+        <div id="ft" style="padding:5px;">OFF</div>
         
         <div id="variables_show" class="easyui-dialog" title="Variable" data-options="iconCls:'icon-search',resizable:false,modal:true" style="width:800px;height:600px;padding:10px" closed="true">
             <pre id="variables_show_json-renderer"></pre>

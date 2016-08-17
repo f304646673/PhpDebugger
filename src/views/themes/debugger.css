@@ -121,3 +121,7 @@ code.has-numbering {
 .icon-breakpoint-add{
 	background:url('icons/breakpoint_add.png') no-repeat center center;
 }
+
+.icon-pencil{
+	background:url('icons/pencil.png') no-repeat center center;
+}

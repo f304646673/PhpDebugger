@@ -35,7 +35,6 @@ $(document).ready(function(){
             else {
                 stop_debug();
             }
-            console.log(checked);
         }
     });
     
@@ -91,21 +90,15 @@ function modify_highlight(id) {
 
         file_path = $(this).parents('pre')[0].attributes.path.value;
         if (isrun_active) {
-            $target.removeClass('run_active');
-            $target.addClass('run');
             remove_line_breakpoint(file_path, lineno);
         }
         else if (isrun) {
-            $target.removeClass('run');
-            $target.addClass('run_active');
             set_line_breakpoint(file_path, lineno)
         }
         else if(isactive) {
-            $target.removeClass('active');
             remove_line_breakpoint(file_path, lineno);
         }
         else {
-            $target.addClass('active');
             set_line_breakpoint(file_path, lineno)
         }
         console.log(lineno);
@@ -222,8 +215,9 @@ function update_cur_run_line_no() {
 }
 
 function update_cur_open_file_breakpoint_display() {
-    var fileid = $('#files_tab').tabs('getSelected').find("pre")[0].id;
-    var filename = $('#files_tab').tabs('getSelected').panel('options').title;
+    var fileid = $('#files_tab').tabs('getSelected').find("pre").attr("id");
+    var filename = $('#files_tab').tabs('getSelected').find("pre").attr("path");
+    filename = base64_decode(filename);
     update_file_breakpoint_line_display(fileid,filename);
 }
 
@@ -236,6 +230,27 @@ function update_file_breakpoint_line_display(fileid,filename) {
                 $('#'+fileid + " ul .active").removeClass("active");
                 for (index = 0; index < data.breakpoint_list_lineno.length; index++) {
                     var lineno_index = data.breakpoint_list_lineno[index] - 1;
+                    
+                    var $target = $('#'+fileid + " ul li:eq("+lineno_index+")"),
+                        isactive = $target.hasClass('active'),
+                        isrun_active = $target.hasClass('run_active'),
+                        isrun = $target.hasClass('run');
+
+                    if (isrun_active) {
+                        $target.removeClass('run_active');
+                        $target.addClass('run');
+                    }
+                    else if (isrun) {
+                        $target.removeClass('run');
+                        $target.addClass('run_active');
+                    }
+                    else if(isactive) {
+                        $target.removeClass('active');
+                    }
+                    else {
+                        $target.addClass('active');
+                    }
+                    
                     $('#'+fileid + " ul li:eq("+lineno_index+")").addClass('active');
                 }
             }
