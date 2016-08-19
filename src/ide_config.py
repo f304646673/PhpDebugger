@@ -5,10 +5,15 @@
 import ConfigParser
 import base64
 import json
+import os
 
 class ide_config:
+    _cfg_name = "ide.cfg"
+    
     def __init__(self):
-        pass
+        if not os.path.exists(self._cfg_name):
+            f = open(self._cfg_name, 'w')
+            f.close()
     
     def add_watch_variable(self,name):
         return self._add_data("watch_variables",name)
@@ -56,7 +61,7 @@ class ide_config:
     
     def _get_data(self,type):
         config = ConfigParser.ConfigParser()
-        with open('ide.cfg','r') as cfgfile: 
+        with open(self._cfg_name,'r') as cfgfile: 
             config.readfp(cfgfile) 
         
         if False == config.has_section(type):
@@ -75,13 +80,13 @@ class ide_config:
         
     def _save_data(self, type, data):
         config_r = ConfigParser.ConfigParser()
-        config_r.read('ide.cfg')
+        config_r.read(self._cfg_name)
         if False == config_r.has_section(type):
             config_r.add_section(type)
         
         input_data = base64.b64encode(json.dumps(data))
         config_r.set(type, "data", input_data)
-        with open('ide.cfg', 'wb') as configfile:
+        with open(self._cfg_name, 'wb') as configfile:
             config_r.write(configfile)
         
 if __name__ == "__main__":

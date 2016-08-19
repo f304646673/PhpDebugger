@@ -8,6 +8,8 @@ import base64
 import md5
 import threading
 from threading import Thread
+
+from request_db import request_db
 from pydbgpd_helper import pydbgpd_helper
 from debugger_exception import debugger_exception
 
@@ -50,6 +52,7 @@ class debugger:
                     "step_out":[self.step_out, "json", True, True],
                     "step_over":[self.step_over, "json", True, True],
                     "stack_get":[self.stack_get, "json", True, True],
+                    "save_request":[self.save_request, "json", True, True],
                     "get_variables":[self.get_variables, "json", True, True],
                     "modify_variable":[self.modify_variable, "json", True, True],
                     "get_cur_stack_info":[self.get_cur_stack_info, "json", True, True],
@@ -370,6 +373,8 @@ class debugger:
         
         breakpoint_list_lineno = []
         for (key,value) in self._breakpoint_list.items():
+            if "filename" not in value.keys():
+                continue
             if param_json["filename"] != value["filename"]:
                 continue
             if "lineno" in value.keys():
@@ -377,18 +382,57 @@ class debugger:
         return {"ret":1, "breakpoint_list_lineno":breakpoint_list_lineno}
     
     def modify_variable(self,param):
-        print param
         param_de = base64.b64decode(param)
-        print param_de
         param_json = json.loads(param_de)
-        print param_json
         if "value" not in param_json.keys() or "name" not in param_json.keys():
             return {"ret":0}
         exucte_cmd = param_json["name"] + "=" + base64.b64decode(param_json["value"])
         print exucte_cmd
         data = self._debugger_helper.do("eval", exucte_cmd)
         return data
+    
+    def save_request(self,param):
+        param_de = base64.b64decode(param)
+        db = request_db()
+        if db.is_request_name_exist(param_de):
+            return {"ret":0, "msg":"name exist"}
         
+        variables = self.get_variables("")
+        get_data_org = self._search_variable(variables, "$_GET")
+        post_data_org = self._search_variable(variables, "$_POST")
+        
+        get_data_new = {}
+        if "value" in get_data_org.keys():
+            get_data_new = self.generate_get_request_map(get_data_org["value"], "$_GET['", "']")
+            
+        post_data_new = {}
+        if "value" in post_data_org.keys():
+            post_data_new = self.generate_get_request_map(post_data_org["value"], "$_POST['", "']")
+        
+        all_data = {"get":get_data_new, "post":post_data_new, "url":""}
+        db.add_request(param_de, all_data)
+        return {"ret":1}
+
+    def generate_get_request_map(self, data, start, end):
+        json_data = json.loads(data)
+        new_data = {}
+        for (key,value) in json_data.items():
+            real_key = self._get_full_name_varaibles_short_name(key, start, end)
+            if len(real_key):
+                new_data[real_key] = value
+        return new_data
+
+    def _get_full_name_varaibles_short_name(self, data, start, end):
+        index = data.find(start)
+        if  -1 == index:
+            return ""
+        index = index + len(start)
+
+        finish = data.rfind(end)
+        if -1 == finish:
+            finish = len(data)
+        return data[index:finish]
+    
 def test_no_action():
     d = debugger()
     d.do("no_action", "")

@@ -71,5 +71,5 @@ function show_variable_in_dialog(name, data) {
     };
     eval("var theJsonValue = "+ data); 
     $('#variables_show_json-renderer').jsonViewer(theJsonValue, options);
-    $('#variables_show').dialog('open').dialog('center').dialog('setTitle',name);
+    $('#variables_show_dlg').dialog('open').dialog('center').dialog('setTitle',name);
 }

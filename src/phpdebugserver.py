@@ -11,11 +11,12 @@ from dbgp.client import *
 import os
 import json
 import md5
+from debugger import debugger
+from ide_config import ide_config
+from request_db import request_db
+from files_watch import files_watch
 from pydbgpd_helper import pydbgpd_helper
 from files_tree_build import files_tree_build_json
-from ide_config import ide_config
-from debugger import debugger
-from files_watch import files_watch
 from variables_tree_build import variables_tree_build
 
 debugger = debugger()
@@ -123,6 +124,26 @@ def request_files_watch():
     elif "get_file" == action:
         fw = files_watch()
         return fw.get_file_content(filepath_de, 50)
+    
+@route("/request", method='get')
+def request_action():
+    action = request.query.action
+    request_name_en = request.query.param
+    request_name_de = base64.b64decode(request_name_en);
+    rdb = request_db()
+    
+    if "get_list" == action:
+        name_list = rdb.get_names()
+        return {"ret":1, "list":name_list}
+    elif "get_data" == action:
+        data = rdb.get_request(request_name_de)
+        return {"ret":1, "data":data}
+    elif "save_data" == action:
+        pass
+    elif "remove_data" == action:
+        rdb.remove_request(request_name_de)
+        return {"ret":1}
+        pass
     
 @route("/variables_watch", method='get')
 def request_variables_watch():

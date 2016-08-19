@@ -172,6 +172,8 @@ function set_current_run_line_no(file_id, run_line) {
         $before_target_run_active.removeClass("run_active").addClass('active');
     }
 
+    $(sel_pre_query).parent().scrollTop(run_line *20/3);
+    
     var index = run_line - 1;
     var query_line = sel_pre_query + " ul li:eq(" + index + ")";
     var $target = $(query_line);

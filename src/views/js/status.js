@@ -100,7 +100,8 @@ function dis_en_able_linkbuttons(enable) {
         "run_debug",
         "step_over_debug",
         "step_in_debug",
-        "step_out_debug"
+        "step_out_debug",
+        "save_request"
     ];
     
     var cmd = enable ? 'enable' : 'disable';
@@ -115,7 +116,8 @@ function dis_en_able_tools_menu_items(enable) {
         "tools_memu_content_run", 
         "tools_memu_content_step_over",
         "tools_memu_content_step_in",
-        "tools_memu_content_step_out"];
+        "tools_memu_content_step_out",
+        "tools_memu_content_save_request"];
     
     var cmd = enable ? 'enableItem' : 'disableItem';
     
