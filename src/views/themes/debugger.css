@@ -128,3 +128,7 @@ code.has-numbering {
 .icon-save-request{
 	background:url('icons/html_add.png') no-repeat center center;
 }
+
+.icon-tick{
+	background:url('icons/tick.png') no-repeat center center;
+}

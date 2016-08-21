@@ -143,6 +143,9 @@ def request_action():
     elif "remove_data" == action:
         rdb.remove_request(request_name_de)
         return {"ret":1}
+    elif "edit_data" == action:
+        data = {"url":"http://www.baidu.com","get":{"x1":"y1","x2":"y2"},"post":{"a1":"b1", "a2":"b2"}}
+        return template('component/edit_request', data = data)
         pass
     
 @route("/variables_watch", method='get')
@@ -202,8 +205,6 @@ def request_variables():
             return json.dumps(ret_new)
         else:
             return json.dumps({"ret":0});
-    else:
-        return template('index', **request.forms)
 
 if __name__ == "__main__":
     try:
