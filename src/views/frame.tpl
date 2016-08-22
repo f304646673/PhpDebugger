@@ -7,6 +7,7 @@
         
         <script src="/files/third/jquery3_1/jquery-3.1.0.js" type="text/javascript"></script>
         
+        <script type="text/javascript" src="/files/js/edit_request.js"></script>
         <script type="text/javascript" src="/files/js/tools.js"></script>
         <script type="text/javascript" src="/files/js/modify_variable.js"></script>
         <script type="text/javascript" src="/files/js/request.js"></script>
@@ -67,6 +68,7 @@
         %include('component/file_menu.tpl')
         %include('component/console_dlg.tpl')
         %include('component/add_folder_dlg.tpl')
+        %include('component/edit_request_dlg.tpl')
         %include('component/save_request_dlg.tpl')
         %include('component/variables_show_dlg.tpl')
         %include('component/add_files_watch_dlg.tpl')

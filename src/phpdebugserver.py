@@ -128,24 +128,36 @@ def request_files_watch():
 @route("/request", method='get')
 def request_action():
     action = request.query.action
-    request_name_en = request.query.param
-    request_name_de = base64.b64decode(request_name_en);
+    param_en = request.query.param
+    param_de = base64.b64decode(param_en);
     rdb = request_db()
     
     if "get_list" == action:
         name_list = rdb.get_names()
         return {"ret":1, "list":name_list}
     elif "get_data" == action:
-        data = rdb.get_request(request_name_de)
+        data = rdb.get_request(param_de)
         return {"ret":1, "data":data}
-    elif "save_data" == action:
-        pass
+    elif "update_data" == action:
+        param_json = json.loads(param_de)
+        name_de = base64.b64decode(param_json["name"])
+        value_de = base64.b64decode(param_json["value"])
+        value_de_json = json.loads(value_de)
+        data = rdb.update_request(name_de, value_de_json)
+        return {"ret":1}
     elif "remove_data" == action:
-        rdb.remove_request(request_name_de)
+        rdb.remove_request(param_de)
         return {"ret":1}
     elif "edit_data" == action:
-        data = {"url":"http://www.baidu.com","get":{"x1":"y1","x2":"y2"},"post":{"a1":"b1", "a2":"b2"}}
-        return template('component/edit_request', data = data)
+        data = rdb.get_request(param_de)
+        #data = {"url":"http://www.baidu.com","get":{"x1":"y1","x2":"y2"},"post":{"a1":"b1", "a2":"b2"}}
+        return template('component/edit_request', data = json.dumps(data), name = param_en)
+    elif "post_data" == action:
+        param_json = json.loads(param_de)
+        url_de = base64.b64decode(param_json["url"])
+        post_data_de = base64.b64decode(param_json["post_data"])
+        post_data_de_json = json.loads(post_data_de)
+        return template('component/post_request', post_data = json.dumps(post_data_de_json), url = url_de)
         pass
     
 @route("/variables_watch", method='get')
