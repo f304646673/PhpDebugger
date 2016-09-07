@@ -144,7 +144,7 @@ class debugger:
             
     def _debug_routine(self):
         while False == self._state_machine_stop_event.isSet():
-            time.sleep(0.5)
+            time.sleep(0.3)
             sessions = self._debugger_helper.do("sessions", "")
             for session_id in sessions:
                 self._debug_session(session_id)
@@ -175,6 +175,7 @@ class debugger:
                     self._debugger_helper.do("step_over","")
             if status_ret["status"] == 2:
                 self._accept_user_action_event.set()
+                time.sleep(5)
             if status_ret["status"] == 3:
                 self._accept_user_action_event.clear()
                 self._debugger_helper.do("run","")
@@ -182,6 +183,7 @@ class debugger:
                 self._accept_user_action_event.clear()
                 break
             status_ret = self._debugger_helper.do("status","")
+            time.sleep(1)
         
         if status_ret["status"] != 0:
             self._debugger_helper.do("exit","")

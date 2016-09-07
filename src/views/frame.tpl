@@ -36,7 +36,7 @@
             //    cache:false
             //});
             $.ajaxSetup({
-                timeout : 1000
+                timeout : 10000
             });
   
             function base64_decode(data) {

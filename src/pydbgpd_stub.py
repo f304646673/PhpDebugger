@@ -7,7 +7,8 @@ import time
 import base64
 import subprocess
 import threading
-from threading  import Thread
+from threading import Thread
+from socket_client import socket_client
 
 globe_signal = True
 
@@ -73,8 +74,9 @@ class pydbgpd_stub:
         "key",]
     
     def __init__(self):
-        self._exc_cmd = "python -i pydbgpd_proxy.py"
-        self._lock_excute = threading.Lock() 
+        self._exc_cmd = "python pydbgpd_proxy.py"
+        self._lock_excute = threading.Lock()
+        self._cmd_client = socket_client()
         
     def _is_cmd_valid(self, cmd, cmd_list):
         for item in cmd_list:
@@ -85,20 +87,12 @@ class pydbgpd_stub:
     def start(self):
         if (self._exc_cmd == None):
             raise NameError("exc_cmd is none")
-        self._process = subprocess.Popen(self._exc_cmd, stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr =subprocess.STDOUT, shell = False)
-        self._out_read_thread = Thread(target=self._read_stdout_thread)
-        self._out_read_thread.daemon = True # thread dies with the program
-        self._out_read_thread.start()
-        data = self._listenData()
-        return data
+        self._process = subprocess.Popen(self._exc_cmd, shell = True)
+        time.sleep(2)
+        self._cmd_client.Start()
         
     def stop(self):
-        if not self._out_read_thread:
-            while self._out_read_thread.is_alive():
-                self._stop_thread = True
-                time.sleep(0.01)
-
-            self._out_read_thread = None
+        self._cmd_client.Stop()
         
         if not self._process:
             raise NameError("subprocess is none")
@@ -114,8 +108,8 @@ class pydbgpd_stub:
         return is_session
     
     def query(self, query_cmd):
-        self._lock_excute.acquire()
         data = ""
+        self._lock_excute.acquire()
         if self._is_session:
             if not self._is_cmd_valid(query_cmd, self._session_cmd):
                 data = "invalid cmd"
@@ -123,74 +117,38 @@ class pydbgpd_stub:
             if not self._is_cmd_valid(query_cmd, self._no_session_cmd):
                 data = "invalid cmd"
         
-        if not len(data):
-            self._query(query_cmd)
-            data = self._listenData()
-            data = data[:-1]
-            
-        self._lock_excute.release()
-        return data
-        
-    def _query(self, query_cmd):
-        if not self._process:
-            raise NameError("subprocess is none")
-        
-        query_cmd += "\n"
-        self._out_data = ""
-        
-        self._write_ready = False
-        self._process.stdin.flush()
-        self._process.stdin.write(query_cmd)
-        self._write_ready = True
-        
-                
-    def _listenData(self):
-        self._write_ready = True
-        while True:
-            if self._stop_thread:
-                break
-            if len(self._out_data) > 0:
-                ret = ""
-                if self._out_data[-3] == "@":
-                    ##print "Switch to Session \n"
+        if "invalid cmd" != data:
+            data = self._cmd_client.Query(query_cmd)
+            if len(data) > 1:
+                if data[-2] == "@":
+                    print "Switch to Session \n"
                     self._is_session = True
-                    try:
-                        ret = base64.b64decode(self._out_data[:-3])
-                    except Exception,errinfo:
-                        print "_listenData Session error" + self._out_data + "\n"
-                    return ret
-                elif self._out_data[-3] == ":":
+                elif data[-2] == ":":
                     self._is_session = False
-                    #print "Switch to No Session \n"
-                    try:
-                        ret = base64.b64decode(self._out_data[:-3])
-                    except Exception,errinfo:
-                        print "_listenData No Session error" + self._out_data + "\n"
-                    return ret
-            time.sleep(0.01) 
-    
-    def _read_stdout_thread(self):
-        while True:
-            if self._stop_thread:
-                break
-            if False == self._write_ready or not self._process:
-                time.sleep(0.01) 
-                continue
-            line = self._process.stdout.readline()
-            #print line
-            if len(line) != 0:
-                self._out_data = self._out_data + line
-            
-    
+                    print "Switch to No Session \n"
+                data = base64.b64decode(data[:-2])
+
+        self._lock_excute.release()
+        return data  
+
+
 if __name__ == "__main__":
     sub = pydbgpd_stub()
     sub.start()
-    sub.query('')
-    print "Key   " + sub.query('key netbeans-xdebug')
+    while True:
+        cmd = raw_input("CMD: ") 
+        print sub.query(cmd)
+        if "quitt" == cmd:
+            break
+    
+    sub.stop()
+    #return
+        
+    #print sub.query('help')
+    #print "Key   " + sub.query('key netbeans-xdebug')
     #print "Listen   " + sub.query('listen -p 192.168.41.1:9000 start')
-    print "Listen   " + sub.query('listen -p localhost:9010 start')
-    print "Help   " + sub.query('help')
+    #print "Listen   " + sub.query('listen -p localhost:9000 start')
+    #print "Help   " + sub.query('help')
     #sub._listenData()
     
-    time.sleep(20)
-    sub.stop()
+    #time.sleep(20)

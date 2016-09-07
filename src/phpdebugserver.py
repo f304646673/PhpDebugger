@@ -19,6 +19,24 @@ from pydbgpd_helper import pydbgpd_helper
 from files_tree_build import files_tree_build_json
 from variables_tree_build import variables_tree_build
 
+import platform
+import socket
+def gethostip():
+    if "Windows" == platform.system():
+        myname = socket.getfqdn(socket.gethostname())
+        myaddr = socket.gethostbyname(myname)
+        return myaddr
+    else:
+        import fcntl
+        import struct
+        ifname = 'eth0'
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        return socket.inet_ntoa(fcntl.ioctl(
+                s.fileno(),
+                0x8915,  # SIOCGIFADDR
+                struct.pack('256s', ifname[:15])
+        )[20:24])
+        
 debugger = debugger()
 #sub = pydbgpd_helper()
 #sub.start()
@@ -220,6 +238,6 @@ def request_variables():
 
 if __name__ == "__main__":
     try:
-        run(host='localhost', port=8085, debug=True)
+        run(host=gethostip(), port=8085, debug=True)
     except Exception as e:
         print e

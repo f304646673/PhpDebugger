@@ -7,7 +7,7 @@
 var get_status_timer;
 
 $(document).ready(function(){
-    get_status_timer = $.timer(1000, function(){
+    get_status_timer = $.timer(3000, function(){
         update_debugger_status();
     });
      
