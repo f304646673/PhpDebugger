@@ -212,7 +212,10 @@ def request_variables_watch():
 def getFile():
     path = request.forms.get("path")
     if path.startswith("file:///"):
-        path = path.replace("file:///", "")
+        if "Windows" == platform.system():
+            path = path.replace("file:///", "")
+        else:
+            path = path.replace("file:///", "/")
     fo = open(path)
     try:
          text = fo.read()

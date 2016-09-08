@@ -65,7 +65,7 @@ class socket_client:
     def Stop(self):
         self._stop_event.set()
         while self._communicate_thread.is_alive():
-            time.sleep(0.1)
+            time.sleep(0.01)
         self._communicate_thread = None
         
 if __name__ == "__main__":

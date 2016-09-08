@@ -4,7 +4,7 @@
         <a href="#" class="easyui-menubutton" data-options="menu:'#tools_memu_content',iconCls:'icon-tools'">Tools</a>
         <a href="#" class="easyui-menubutton" data-options="menu:'#help_memu_content',iconCls:'icon-help-fl'">Help</a>
         <a href="#" class="easyui-menubutton" data-options="menu:'#about_memu_content',iconCls:'icon-about'">About</a>
-        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-console',plain:true" onclick="$('#console_dlg').dialog('open')">Console</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-console',plain:true" onclick="console_dlg_open()">Console</a>
     </div>
     <div class="easyui-panel" style="padding:0px;"  style="width:100%;height:30px;min-height:30px;min-width:800px;border:1px;">
         <input id="start_stop_debug" class="easyui-switchbutton" style="hight:30px;width:70px">

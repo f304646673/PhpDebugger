@@ -109,26 +109,26 @@ class pydbgpd_stub:
     
     def query(self, query_cmd):
         data = ""
-        self._lock_excute.acquire()
         if self._is_session:
             if not self._is_cmd_valid(query_cmd, self._session_cmd):
-                data = "invalid cmd"
+                return "invalid cmd"
         else:
             if not self._is_cmd_valid(query_cmd, self._no_session_cmd):
-                data = "invalid cmd"
+                return "invalid cmd"
         
-        if "invalid cmd" != data:
-            data = self._cmd_client.Query(query_cmd)
-            if len(data) > 1:
-                if data[-2] == "@":
-                    print "Switch to Session \n"
-                    self._is_session = True
-                elif data[-2] == ":":
-                    self._is_session = False
-                    print "Switch to No Session \n"
-                data = base64.b64decode(data[:-2])
-
+        self._lock_excute.acquire()
+        data = self._cmd_client.Query(query_cmd)
         self._lock_excute.release()
+        
+        if len(data) > 1:
+            if data[-2] == "@":
+                print "Switch to Session \n"
+                self._is_session = True
+            elif data[-2] == ":":
+                self._is_session = False
+                print "Switch to No Session \n"
+            data = base64.b64decode(data[:-2])
+            
         return data  
 
 

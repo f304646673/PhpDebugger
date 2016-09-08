@@ -1,16 +1,5 @@
 <div id="botton_tab_layout" data-options="region:'south',split:true" style="height:200px;min-height:40px;">
     <div class="easyui-tabs" id="botton_tab" data-options="fit:true,border:false,plain:true,tabWidth:135,">
-        <div title="Variables" style="padding:5px" data-options="tools:'#botton_variables_tab_tools'">
-            <table id="variables_treegrid" class="easyui-treegrid" style="width:100%;height:100%" data-options="idField:'id',treeField:'name'">
-                <thead>
-                    <tr>
-                        <th data-options="field:'name'" style="width:20%">Name</th>
-                        <th data-options="field:'type'" style="width:10%">Type</th>
-                        <th data-options="field:'value'" style="width:70%">Value</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
         <div title="Stack" style="padding:5px;" data-options="tools:'#botton_stack_tab_tools'">
             <table class="easyui-datagrid" id="stack_datagrid" style="width:100%;height:100%" data-options="singleSelect:true">
                 <thead>
@@ -21,6 +10,17 @@
                         <th data-options="field:'function'" style="width:15%">Function</th>
                         <th data-options="field:'file_id'" style="width:0%" hidden="true"></th>
                         <th data-options="field:'filename_last'" style="width:0%" hidden="true"></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div title="Variables" style="padding:5px" data-options="tools:'#botton_variables_tab_tools'">
+            <table id="variables_treegrid" class="easyui-treegrid" style="width:100%;height:100%" data-options="idField:'id',treeField:'name'">
+                <thead>
+                    <tr>
+                        <th data-options="field:'name'" style="width:20%">Name</th>
+                        <th data-options="field:'type'" style="width:10%">Type</th>
+                        <th data-options="field:'value'" style="width:70%">Value</th>
                     </tr>
                 </thead>
             </table>

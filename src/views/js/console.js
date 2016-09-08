@@ -50,3 +50,7 @@ function append_debug_view(text) {
     var scrollTop = $("#console_dlg_view")[0].scrollHeight ;  
     $("#console_dlg_view").scrollTop(scrollTop); 
 }
+
+function console_dlg_open() {
+    $('#console_dlg').dialog('open').dialog('center');
+}

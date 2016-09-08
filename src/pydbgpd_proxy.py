@@ -25,7 +25,7 @@ class input_redirection:
     
     def read(self, size=-1):
         while len(self._data) == 0:
-            time.sleep(0.1)
+            time.sleep(0.01)
         self._lock_excute.acquire()
         ret_data = self._data
         self._data = ""
@@ -34,7 +34,7 @@ class input_redirection:
     
     def readline(self, size=-1):
         while len(self._data) == 0:
-            time.sleep(0.1)
+            time.sleep(0.01)
         self._lock_excute.acquire()
         ret_data = self._data
         self._data = ""
@@ -43,7 +43,7 @@ class input_redirection:
     
     def readlines(self, size=-1):
         while len(self._data) == 0:
-            time.sleep(0.1)
+            time.sleep(0.01)
         self._lock_excute.acquire()
         ret_data = self._data
         self._data = ""
