@@ -34,6 +34,10 @@ class debugger:
         "conditional" : ["filename","lineno","expression","type"],
         "watch" : [],
     }
+    
+    _variable_watch = False
+    _all_stack_parameters = False
+    _ide_key = "PhpDebugServer"
         
     def __init__(self):
         self._state_machine_stop_event = threading.Event()
@@ -45,6 +49,11 @@ class debugger:
     def __del__(self):
         pass
     
+    def set_settings(self, settings):
+        self._variable_watch = settings['variable_watch']
+        self._all_stack_parameters = settings['all_stack_parameters']
+        self._ide_key = settings['ide_key']
+        
     def do(self, action, param):
         actions = {"run":[self.run, "json", True, True],
                     "query":[self.query, "json", True, True],
@@ -307,30 +316,44 @@ class debugger:
         return self._debugger_helper.do("get_cur_stack_info", param)
         
     def step_over(self,param):
-        self._pre_variables = self.get_variables("")
-        ret = self._debugger_helper.do("step_over", param)
-        self._cur_variables = self.get_variables("")
+        if self._variable_watch:
+            self._pre_variables = self.get_variables("")
+            ret = self._debugger_helper.do("step_over", param)
+            self._cur_variables = self.get_variables("")
+        else:
+            ret = self._debugger_helper.do("step_over", param)
         return ret
     
     def step_in(self,param):
-        self._pre_variables = self.get_variables("")
-        ret = self._debugger_helper.do("step_in", param)
-        self._cur_variables = self.get_variables("")
+        if self._variable_watch:
+            self._pre_variables = self.get_variables("")
+            ret = self._debugger_helper.do("step_in", param)
+            self._cur_variables = self.get_variables("")
+        else:
+            ret = self._debugger_helper.do("step_in", param)
         return ret
 
     def step_out(self,param):
-        self._pre_variables = self.get_variables("")
-        ret = self._debugger_helper.do("step_out", param)
-        self._cur_variables = self.get_variables("")
+        if self._variable_watch:
+            self._pre_variables = self.get_variables("")
+            ret = self._debugger_helper.do("step_out", param)
+            self._cur_variables = self.get_variables("")
+        else:
+            ret = self._debugger_helper.do("step_out", param)
         return ret
    
     def run(self,param):
-        self._pre_variables = self.get_variables("")
-        ret = self._debugger_helper.do("run", param)
-        self._cur_variables = self.get_variables("")
+        if self._variable_watch:
+            self._pre_variables = self.get_variables("")
+            ret = self._debugger_helper.do("run", param)
+            self._cur_variables = self.get_variables("")
+        else:
+            ret = self._debugger_helper.do("run", param)
         return ret
     
     def get_variable_watch(self,param):
+        if False == self._variable_watch:
+            return {"ret":0}
         param_de = base64.b64decode(param)
         pre_data = self._search_variable(self._pre_variables, param_de)
         cur_data = self._search_variable(self._cur_variables, param_de)
@@ -357,8 +380,11 @@ class debugger:
         return self._debugger_helper.do("stack_get", param)
     
     def get_variables(self,param):
-        return self._debugger_helper.do("get_variables", param)
-
+        if self._all_stack_parameters:
+            return self._debugger_helper.do("get_variables", param)
+        else:
+            return self._debugger_helper.do("get_cur_stack_variables", param)
+        
     def breakpoint_list(self,param):
         breakpoint_list_info = []
         for (key,value) in self._breakpoint_list.items():

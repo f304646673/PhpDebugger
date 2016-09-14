@@ -33,6 +33,8 @@
     <div data-options="iconCls:'icon-variables-watch-add'" onclick="add_variables_watch_dlg_open();">Add Variable Watch</div>
     <div class="menu-sep"></div>
     <div data-options="iconCls:'icon-folder-add'" onclick="add_folder_dlg_open();">Add Folder</div>
+    <div class="menu-sep"></div>
+    <div data-options="iconCls:'icon-cog'" onclick="setting_dlg_open();">Setting</div>
 </div>
 
 <div id="help_memu_content" style="width:100px;">

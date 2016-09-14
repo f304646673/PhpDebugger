@@ -8,6 +8,7 @@
         <script src="/files/third/jquery3_1/jquery-3.1.0.js" type="text/javascript"></script>
         
         <script type="text/javascript" src="/files/js/edit_request.js"></script>
+        <script type="text/javascript" src="/files/js/debug_setting.js"></script>
         <script type="text/javascript" src="/files/js/tools.js"></script>
         <script type="text/javascript" src="/files/js/modify_variable.js"></script>
         <script type="text/javascript" src="/files/js/request.js"></script>
@@ -75,6 +76,7 @@
         %include('component/modify_variable_dlg.tpl')
         %include('component/breakpoint_add_dialog.tpl')
         %include('component/add_variables_watch_dlg.tpl')
+        %include('component/setting_dlg.tpl')
         
     </body>
 </html>

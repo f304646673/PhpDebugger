@@ -130,6 +130,7 @@ class pydbgpd_helper:
                     "get_last_frame_info":self.get_last_frame_info,
                     "set_line_breakpoint":self.set_line_breakpoint,
                     "remove_line_breakpoint":self.remove_line_breakpoint,
+                    "get_cur_stack_variables":self.get_cur_stack_variables,
                     }
                     
         if not self._pydbgpd:
@@ -258,6 +259,9 @@ class pydbgpd_helper:
     
     def get_variables(self,param):
         return self._get_all_variables()
+    
+    def get_cur_stack_variables(self,param):
+        return self._get_all_variables(True)
     
     def step_over(self, param):
         return self._step_cmd("step over")
@@ -394,8 +398,8 @@ class pydbgpd_helper:
             return {"ret":1}
         return {"ret":0}
     
-    def _get_all_variables(self):
-        all_data = self._get_stack_variables()
+    def _get_all_variables(self, cur = False):
+        all_data = self._get_stack_variables(cur)
         return {"ret":1, "data":all_data}
     
     def _get_context_variables(self, depth_id):
@@ -419,7 +423,7 @@ class pydbgpd_helper:
         
         return info
     
-    def _get_stack_variables(self):
+    def _get_stack_variables(self, cur = False):
         info = {}
         data = self._pydbgpd.query('stack_depth')
         #'Stack Depth: 3'
@@ -430,6 +434,8 @@ class pydbgpd_helper:
                 iteminfo = self._get_context_variables(index)
                 key = "Frame " + str(index)
                 info[key] = iteminfo
+                if cur:
+                    break
         except Exception,errinfo:
             print errinfo, "_get_stack_variables error:" + data + "\n"
             

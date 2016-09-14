@@ -6,11 +6,14 @@ from bottle import static_file
 from bottle import template
 from bottle import request, response, get, post
 
-from dbgp.client import *
 
 import os
 import json
 import md5
+import platform
+import socket
+
+from dbgp.client import *
 from debugger import debugger
 from ide_config import ide_config
 from request_db import request_db
@@ -19,8 +22,6 @@ from pydbgpd_helper import pydbgpd_helper
 from files_tree_build import files_tree_build_json
 from variables_tree_build import variables_tree_build
 
-import platform
-import socket
 def gethostip():
     if "Windows" == platform.system():
         myname = socket.getfqdn(socket.gethostname())
@@ -38,26 +39,25 @@ def gethostip():
         )[20:24])
         
 debugger = debugger()
-#sub = pydbgpd_helper()
-#sub.start()
 
 files_tree = files_tree_build_json()
   
-request_key = ["cmd", "result"]
-
-@route('/index')
-def main_page():
-    #os.system("python bin/pydbgp.py -d localhost:9000")
-    #return static_file('index.html', root='D:\\fangliang\\Documents\\NetBeansProjects\\PhpDebugServer\\src\\phpdebugserver\\', mimetype='text/html')
+@route('/setting', method='get')
+def debugger_setting():
+    action = request.query.action
+    param = request.query.param
+    param_de = base64.b64decode(param)
     
-    #info = {
-    #"context":{'Locals':[{'name':'$a', 'type':'string', 'value':'1'}],'Superglobals':[{'name':'$b', 'type':'int', 'value':1}], 'User defined constants':[{'name':'$c', 'type':'string', 'value':'2'}]},
-    #"status": {},
-    #"stack":{'frame':0, 'path':'file:///var/www/html/index.php', 'line_no':8, 'function_name':'main'}
-    #}
-    #encodedjson = json.dumps(info)
-    #request.forms.append('info', encodedjson)
-    return template('index', **request.forms)
+    ide_cfg = ide_config()
+    if action == 'set':
+        param_json = json.loads(param_de)
+        debugger.set_settings(param_json)
+        data = ide_cfg.set_setting_conf(param_de)
+    elif action == 'get':
+        data = ide_cfg.get_setting_conf()
+        if not data:
+            return json.dumps(data)
+    return data
 
 @route('/files/<filepath:path>')
 def highlight_file(filepath):
@@ -65,6 +65,10 @@ def highlight_file(filepath):
 
 @route('/frame', method='Get')
 def request_cmd_get():
+    ide_cfg = ide_config()
+    data = ide_cfg.get_setting_conf()
+    param_json = json.loads(data)
+    debugger.set_settings(param_json)
     return template('frame', **request.forms)
 
 @route('/cmd', method='POST')
@@ -83,7 +87,6 @@ def request_do_post():
     global debugger
     (ret,type) = debugger.do(action, param);
     if type == "json":
-        #print ret
         return json.dumps(ret)
     else:
         return template('index', **request.forms)
@@ -94,7 +97,6 @@ def request_files_tree():
     folder_en = request.query.param
     folder_de = base64.b64decode(folder_en);
     ide_cfg = ide_config()
-    print folder_de, action
     
     if "build" == action:
         folders = ide_cfg.get_folders()
@@ -116,7 +118,6 @@ def request_files_watch():
     filepath_en = request.query.param
     filepath_de = base64.b64decode(filepath_en);
     ide_cfg = ide_config()
-    print filepath_en, action
     
     if "get_list" == action:
         files = ide_cfg.get_watch_file()
@@ -176,7 +177,6 @@ def request_action():
         post_data_de = base64.b64decode(param_json["post_data"])
         post_data_de_json = json.loads(post_data_de)
         return template('component/post_request', post_data = json.dumps(post_data_de_json), url = url_de)
-        pass
     
 @route("/variables_watch", method='get')
 def request_variables_watch():
@@ -209,7 +209,7 @@ def request_variables_watch():
         pass
     
 @route('/getfile', method='POST')
-def getFile():
+def get_file():
     path = request.forms.get("path")
     if path.startswith("file:///"):
         if "Windows" == platform.system():
