@@ -216,6 +216,8 @@ class appShell(listcmd.ListCmd):
         """
     quit, exit, q -- exit the DBGP Application Layer shell
         """
+        if self._app.currentSession._stop:
+            self._app.currentSession._application.releaseSession(self._app.currentSession)
         return 1
     do_q = do_quit
     do_exit = do_quit

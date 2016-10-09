@@ -43,7 +43,7 @@ class pydbgpd_helper:
         info["stack"] = self._get_stack_info()
         return info
      
-    def check_con(self, param): 
+    def select_first_session(self, param): 
         self.select_first_conn()
         if self._pydbgpd.is_session():
             self._pydbgpd.query("step")
@@ -123,7 +123,7 @@ class pydbgpd_helper:
                     "stack_get":self.stack_get,
                     "get_variables":self.get_variables,
                     "add_breakpoint":self.add_breakpoint,
-                    "select_first_session":self.check_con,
+                    "select_first_session":self.select_first_session,
                     "breakpoint_list":self.breakpoint_list,
                     "remove_breakpoint":self.remove_breakpoint,
                     "get_cur_stack_info":self.get_cur_stack_info,
