@@ -2,11 +2,13 @@
 # To change this template file, choose Tools | Templates
 # and open the template in the editor.
 
+import os
 import sys
 import time
 import base64
-import subprocess
+import platform
 import threading
+import subprocess
 from threading import Thread
 from socket_client import socket_client
 
@@ -87,7 +89,10 @@ class pydbgpd_stub:
     def start(self):
         if (self._exc_cmd == None):
             raise NameError("exc_cmd is none")
-        self._process = subprocess.Popen(self._exc_cmd, shell = True)
+        if "Windows" == platform.system():
+            self._process = subprocess.Popen(self._exc_cmd, shell = False)
+        else:
+            self._process = subprocess.Popen(self._exc_cmd, shell = True,  preexec_fn = os.setpgrp)
         time.sleep(2)
         self._cmd_client.Start()
         
@@ -97,6 +102,10 @@ class pydbgpd_stub:
         if not self._process:
             raise NameError("subprocess is none")
         else:
+            if "Windows" != platform.system():
+                pid = self._process.pid
+                pgid = os.getpgid(pid)
+                os.kill(-pgid, 9)
             self._process.terminate()
             self._process.kill()
             self._process = None
