@@ -127,7 +127,6 @@ class pydbgpd_stub:
         
         self._lock_excute.acquire()
         data = self._cmd_client.Query(query_cmd)
-        self._lock_excute.release()
         
         if len(data) > 1:
             if data[-2] == "@":
@@ -137,7 +136,9 @@ class pydbgpd_stub:
                 self._is_session = False
                 print "Switch to No Session \n"
             data = base64.b64decode(data[:-2])
-            
+        
+        self._lock_excute.release()
+        
         return data  
 
 

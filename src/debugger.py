@@ -177,7 +177,7 @@ class debugger:
             if status_ret["ret"] == 0:
                 break
             if status_ret["status"] == 1:
-                self._accept_user_action_event.set()
+                #self._accept_user_action_event.set()
                 if len(self._breakpoint_list):
                     self._debugger_helper.do("run","")
                 else:
@@ -251,7 +251,6 @@ class debugger:
             self._breakpoint_list[breakpoint_key]["state"] = "disable"
             if self._debugger_helper and self._debugger_helper.is_session():
                 add_ret = self._debugger_helper.do("add_breakpoint", breakpoint_value)
-                print add_ret
                 if add_ret["ret"] == 1:
                     for item in update_keys:
                         if item in add_ret["breakpoint"].keys():
@@ -415,7 +414,6 @@ class debugger:
         if "value" not in param_json.keys() or "name" not in param_json.keys():
             return {"ret":0}
         exucte_cmd = param_json["name"] + "=" + base64.b64decode(param_json["value"])
-        print exucte_cmd
         data = self._debugger_helper.do("eval", exucte_cmd)
         return data
     

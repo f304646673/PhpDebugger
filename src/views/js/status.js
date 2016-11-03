@@ -49,6 +49,7 @@ function change_debugger_status(status) {
         case 2:
             debugger_status_debug();
             $("#ft")[0].innerHTML = "Break";
+            update_cur_run_line_no();
             break;
         case 3:
             $("#ft")[0].innerHTML = "Stopping";

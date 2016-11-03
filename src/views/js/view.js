@@ -232,7 +232,6 @@ function update_file_breakpoint_line_display(fileid,filename) {
                 $('#'+fileid + " ul .active").removeClass("active");
                 for (index = 0; index < data.breakpoint_list_lineno.length; index++) {
                     var lineno_index = data.breakpoint_list_lineno[index] - 1;
-                    
                     var $target = $('#'+fileid + " ul li:eq("+lineno_index+")"),
                         isactive = $target.hasClass('active'),
                         isrun_active = $target.hasClass('run_active'),

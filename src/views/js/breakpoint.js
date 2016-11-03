@@ -80,6 +80,7 @@ function add_breakpoint_line(filename, lineno) {
                 add_breakpoint_dlg_close();
             }
             update_cur_selected_tab_info();
+            update_cur_open_file_breakpoint_display();
             console.log(data);
     }, "json");
 }

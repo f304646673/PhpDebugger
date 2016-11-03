@@ -108,6 +108,12 @@ def request_files_tree():
         ret = {"ret":1}
         return json.dumps(ret)
     elif "remove" == action:
+        if folder_de.startswith("file:///"):
+            if "Windows" == platform.system():
+                folder_de = folder_de.replace("file:///", "")
+                folder_de = folder_de.replace("/", "\\")
+            else:
+                folder_de = folder_de.replace("file:///", "/")
         folders = ide_cfg.remove_folder(folder_de)
         ret = {"ret":1}
         return json.dumps(ret)

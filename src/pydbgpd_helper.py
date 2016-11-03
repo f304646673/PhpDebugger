@@ -402,6 +402,24 @@ class pydbgpd_helper:
         all_data = self._get_stack_variables(cur)
         return {"ret":1, "data":all_data}
     
+    def _get_stack_variables(self, cur = False):
+        info = {}
+        data = self._pydbgpd.query('stack_depth')
+        #'Stack Depth: 3'
+        pattern = re.compile("Stack Depth: (\d+)")
+        try:
+            res = pattern.search(data).groups()
+            for index in range(0, int(res[0])):
+                iteminfo = self._get_context_variables(index)
+                key = "Frame " + str(index)
+                info[key] = iteminfo
+                if cur:
+                    break
+        except Exception,errinfo:
+            print errinfo, "_get_stack_variables error:" + data + "\n"
+            
+        return info
+    
     def _get_context_variables(self, depth_id):
         data = self._pydbgpd.query('context_names')
 #data='''0: Locals
@@ -421,24 +439,6 @@ class pydbgpd_helper:
             except Exception,errinfo:
                 print errinfo, "context_names error:" + item + "\n"
         
-        return info
-    
-    def _get_stack_variables(self, cur = False):
-        info = {}
-        data = self._pydbgpd.query('stack_depth')
-        #'Stack Depth: 3'
-        pattern = re.compile("Stack Depth: (\d+)")
-        try:
-            res = pattern.search(data).groups()
-            for index in range(0, int(res[0])):
-                iteminfo = self._get_context_variables(index)
-                key = "Frame " + str(index)
-                info[key] = iteminfo
-                if cur:
-                    break
-        except Exception,errinfo:
-            print errinfo, "_get_stack_variables error:" + data + "\n"
-            
         return info
             
     def _get_context(self, depth_id, context_id):
