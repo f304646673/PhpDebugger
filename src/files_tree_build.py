@@ -6,6 +6,7 @@ import os
 import json
 import base64
 import md5
+import platform
 
 class files_tree_build:
     
@@ -79,7 +80,10 @@ class files_tree_build_json:
         sub_files_info = {}
         files_info = {}
         folder_path_modify = filepath.replace('\\', '/')
-        folder_path_modify = "file:///" + folder_path_modify
+        if "Windows" == platform.system():
+            folder_path_modify = "file:///" + folder_path_modify
+        else:
+            folder_path_modify = "file://" + folder_path_modify
         files_info = self.build_folder_info(folder_path_modify.split('/')[-1], folder_path_modify)
         for (k,v) in files_info.items():
             sub_files_info[k] = v
@@ -95,7 +99,10 @@ class files_tree_build_json:
             else:
                 file_path_modify = os.path.join(filepath, fi_d)
                 file_path_modify = file_path_modify.replace('\\', '/')
-                file_path_modify = "file:///" + file_path_modify
+                if "Windows" == platform.system():
+                    file_path_modify = "file:///" + file_path_modify
+                else:
+                    file_path_modify = "file://" + file_path_modify
                 files_temp.append([fi, file_path_modify])
                 
         for item in files_temp:

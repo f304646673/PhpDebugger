@@ -95,6 +95,8 @@ class ide_config:
             return []
             
         output_data = config.get(type, "data")
+        if 0 == len(output_data):
+            return ''
         temp = base64.b64decode(output_data)
         data = json.loads(temp)
         return data

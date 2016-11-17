@@ -67,8 +67,9 @@ def highlight_file(filepath):
 def request_cmd_get():
     ide_cfg = ide_config()
     data = ide_cfg.get_setting_conf()
-    param_json = json.loads(data)
-    debugger.set_settings(param_json)
+    if len(data):
+        param_json = json.loads(data)
+        debugger.set_settings(param_json)
     return template('frame', **request.forms)
 
 @route('/cmd', method='POST')
@@ -95,7 +96,10 @@ def request_do_post():
 def request_files_tree():
     action = request.query.action
     folder_en = request.query.param
-    folder_de = base64.b64decode(folder_en);
+    folder_de = base64.b64decode(folder_en)
+    if len(folder_de) > 0:
+        if folder_de[-1] == '/' or folder_de[-1] == '\\':
+            folder_de = folder_de[:-1]
     ide_cfg = ide_config()
     
     if "build" == action:
